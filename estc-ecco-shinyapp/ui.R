@@ -20,7 +20,7 @@ shinyUI(fluidPage(
                   min = 1500,
                   max = 1880,
                   value = c(1700, 1800)),
-      selectInput("puclication_place",
+      selectInput("publication_place",
                   "Publication place:",
                   choices = list("All",
                                  "London",
@@ -42,14 +42,40 @@ shinyUI(fluidPage(
                                  "French",
                                  "German",
                                  "Welsh"),
-                  selected = "any")
+                  selected = "any"),
+      selectInput("time_window",
+                  "Time segments: (NOT IMPLEMENTED)",
+                  choices = list(20,
+                                 10,
+                                 5,
+                                 1),
+                  selected = 10),
+      selectInput("document_type",
+                  "Document type:",
+                  choices = list("All", 
+                                 "Books",
+                                 "Pamphlets"),
+                  selected = "All"),
+      selectInput("idsource",
+                  "Queryfile:",
+                  choices = list("equality.csv",
+                                 "liberty.csv",
+                                 "rebellion.csv",
+                                 "revolution.csv",
+                                 "ungodly.csv"),
+                  selected = "equality.csv")
       
     ),
     
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("booksVsPamphletsPlot")
+      tabsetPanel(
+        tabPanel("B vs P",
+                 plotOutput("books_vs_pamphlets_plot")),
+        tabPanel("Author titlecount",
+                 plotOutput("title_count_top_10_authors_plot"))
+      )
     )
   )
 ))
