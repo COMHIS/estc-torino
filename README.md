@@ -1,6 +1,10 @@
 Analysis of British Library ESTC Data Collection
 ============================================
 
+This is a fork of [the ESTC repository](https://github.com/rOpenGov/estc), focusing on development of features to be demonstrated in the [DR2 conference](http://www.filosofia.unito.it/dr2/) in Turin in January 16-18th 2017. Development will cease after the conference, and relevant parts will be merged back into the original repository.
+
+### Original README:
+
 This is an algorithmic toolkit for [R](http://r-project.org), designed for transparent quantitative analysis of the British Library [English Short Title Catalogue (ESTC) data collection](http://estc.bl.uk/F/?func=file&file_name=login-bl-estc). The package is under active, open development; the tools, analysis, and documentation are preliminary and constantly updated. Your [contributions](http://ropengov.github.com/contact.html), [bug reports and feedback](https://github.com/ropengov/estc) are welcome (but please, don't ask us if we know who is Livy if he is temporarily on discarded author list. Serious data science takes time)!
 
 
