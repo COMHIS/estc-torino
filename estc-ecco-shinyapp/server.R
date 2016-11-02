@@ -60,27 +60,58 @@ get_filtered_dataset <- function(input, dataset) {
 
 shinyServer(function(input, output) {
   
-  # idsource <- "../inst/examples/data/equality.csv" # params$idsource
+  reactive_filtered_dataset <- reactive({
+    get_filtered_dataset(input, dataset)
+  })
+  
+  reactive_query_ids <- reactive({
+    idsource <- get_idsource_fullpath(input$idsource)
+    format_query_ids(idsource)
+  })
   
   output$books_vs_pamphlets_plot <- renderPlot({
     
-    filtered_dataset <- get_filtered_dataset(input, dataset)
+    filtered_dataset <- reactive_filtered_dataset()
     books_vs_pamphlets_plot <- plot_books_vs_pamphlets(filtered_dataset)
     return(books_vs_pamphlets_plot)
   })
   
   output$title_count_top_10_authors_plot <- renderPlot({
 
-    filtered_dataset <- get_filtered_dataset(input, dataset)
+    filtered_dataset <- reactive_filtered_dataset()
     plot_titlecount_top10_authors <-
       plot_titlecount_timeline_for_top10_authors(filtered_dataset)
     return(plot_titlecount_top10_authors)
   })
-    
+  
+  output$top_places_by_titlecount_plot <- renderPlot({
 
+    # The top places defined by title count (left); Relation between
+    # titlecount and query hits (right). Note that document lengths are not
+    # taken into account here.
   
-  # output$toptitlesPlot <- renderPlot({
-  #   plot_top_titles_by_title_count(df0, nchar)
-  # })
+    filtered_dataset <- reactive_filtered_dataset()
+    
+    plot_top_places_by_titlecount <- top_places_by_titlecount_plot(filtered_dataset,
+                                                                   ntop)
+    # plot_titlecount_queryhits <-
+    #   titlecount_queryhits_relation_plot(filtered_dataset,
+    #                                      reactive_query_ids,
+    #                                      field = "publication_place")
+    
+    # grid.arrange(plot_top_places_by_titlecount,
+    #              plot_titlecount_queryhits,
+    #              nrow = 1)  
+    return(plot_top_places_by_titlecount)
+  })
   
+  output$top_places_titlecount_and_query_hits_plot <- renderPlot({
+    filtered_dataset <- reactive_filtered_dataset()
+    query_ids <- reactive_query_ids()
+    plot_titlecount_queryhits <-
+      titlecount_queryhits_relation_plot(filtered_dataset,
+                                         query_ids,
+                                         field = "publication_place")
+    return(plot_titlecount_queryhits)
+  })
 })

@@ -15,6 +15,14 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
+      selectInput("idsource",
+                  "Queryfile:",
+                  choices = list("equality.csv",
+                                 "liberty.csv",
+                                 "rebellion.csv",
+                                 "revolution.csv",
+                                 "ungodly.csv"),
+                  selected = "equality.csv"),
       sliderInput("range_years",
                   "Years:",
                   min = 1500,
@@ -44,7 +52,7 @@ shinyUI(fluidPage(
                                  "Welsh"),
                   selected = "any"),
       selectInput("time_window",
-                  "Time segments: (NOT IMPLEMENTED)",
+                  "Time segments: NOT IMPLEMENTED YET!",
                   choices = list(20,
                                  10,
                                  5,
@@ -55,26 +63,20 @@ shinyUI(fluidPage(
                   choices = list("All", 
                                  "Books",
                                  "Pamphlets"),
-                  selected = "All"),
-      selectInput("idsource",
-                  "Queryfile:",
-                  choices = list("equality.csv",
-                                 "liberty.csv",
-                                 "rebellion.csv",
-                                 "revolution.csv",
-                                 "ungodly.csv"),
-                  selected = "equality.csv")
-      
+                  selected = "All")
     ),
     
     
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(
-        tabPanel("B vs P",
+        tabPanel("Books/Pamphlets",
                  plotOutput("books_vs_pamphlets_plot")),
         tabPanel("Author titlecount",
-                 plotOutput("title_count_top_10_authors_plot"))
+                 plotOutput("title_count_top_10_authors_plot")),
+        tabPanel("Top places",
+                 plotOutput("top_places_by_titlecount_plot"),
+                 plotOutput("top_places_titlecount_and_query_hits_plot"))
       )
     )
   )
