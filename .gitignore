@@ -18,3 +18,7 @@ inst/examples/*.Rproj
 
 inst/examples/Scotland.R
 inst/examples/tmp.R
+.Rproj.user
+*.Rproj
+
+R/bibliographica
