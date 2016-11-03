@@ -208,18 +208,19 @@ plot_top_authors_hits_per_edition <- function(top_authors_by_edition) {
 
 plot_titlecount_timeline_for_top10_authors <- function(df0, top_authors_n = 10){
   df <- df0
-  theme_set(theme_bw(20))
+  # theme_set(theme_bw(20))
   top.authors <- names(top(df, field = "author", n = top_authors_n))
   dfs <- df %>% filter(author %in% top.authors) %>%
     group_by(author, publication_time) %>%
     tally() %>%
     arrange(publication_time)
   v <- seq(min(dfs$publication_time), max(dfs$publication_time), 20)
-  p <- ggplot(dfs, aes(x = publication_time, y = n, fill = author)) +
-    geom_bar(stat = "identity", position = "stack", color = "black") +
+  p <- ggplot(dfs, aes(x = publication_time, y = n, fill = author)) + # , color = "black"
+    geom_bar(stat = "identity", position = "stack") +
     xlab("Publication time") +
     ylab("Title count (n)") +
-    scale_fill_grey() +
+    # scale_fill_grey() +
+    scale_fill_hue() +
     scale_x_continuous(breaks = v, labels = v) +
     guides(fill = guide_legend("Author", reverse = TRUE)) 
   return(p)

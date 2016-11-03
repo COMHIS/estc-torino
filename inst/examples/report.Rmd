@@ -256,7 +256,9 @@ relative_titlecount_plot <-
                                     df.preprocessed.allplaces,
                                     selected.place)
 
-grid.arrange(titlecount_plot, relative_titlecount_plot, nrow = 1)
+grid.arrange(titlecount_plot,
+             relative_titlecount_plot,
+             nrow = 1)
 ```
 
 
