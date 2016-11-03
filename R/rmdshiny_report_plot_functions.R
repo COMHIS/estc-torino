@@ -25,7 +25,7 @@ plot_paper_consumption_books_vs_pamphlets <- function (dataset) {
                        group = document_type,
                        color = document_type))
   p <- p + geom_point() + scale_y_log10()
-  p <- p + geom_smooth(method = "loess")
+  p <- p + geom_smooth(method = "loess") # span = 0.1
   p <- p + xlab("Year")
   p <- p + ylab("Paper (sheets)")
   return (p)
@@ -174,7 +174,7 @@ plot_books_vs_pamphlets <- function(df0) {
                        color = document_type))
   
   p <- p + geom_point() + scale_y_log10() 
-  p <- p + geom_smooth(method = "loess")
+  p <- p + geom_smooth(method = "loess", span = 0.1)
   p <- p + xlab("Year")
   p <- p + ylab("Paper (sheets)")
   
