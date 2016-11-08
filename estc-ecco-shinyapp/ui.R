@@ -25,7 +25,7 @@ shinyUI(fluidPage(
       #             selected = "equality.csv"),
       textInput("search_term",
                 "Search string:",
-                "rebellion"),
+                ""),
       sliderInput("range_years",
                   "Years:",
                   min = 1500,
@@ -75,12 +75,11 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      # textOutput("memory_usage"),
+      # textOutput("sanity_check"),
       tabsetPanel(
         tabPanel("Books/Pamphlets",
                  h3("Paper consumption: books vs. pamphlets",
                     class = "text-center"),
-                 # p("")
                  plotOutput("books_vs_pamphlets_plot")
                  ),
         tabPanel("Author titlecount",
