@@ -28,9 +28,9 @@ shinyUI(fluidPage(
                 ""),
       sliderInput("range_years",
                   "Years:",
-                  min = 1500,
-                  max = 1880,
-                  value = c(1700, 1800),
+                  min = 1700,
+                  max = 1799,
+                  value = c(1700, 1799),
                   step = 5),
       selectInput("publication_place",
                   "Publication place:",
@@ -56,7 +56,7 @@ shinyUI(fluidPage(
                                  "Welsh"),
                   selected = "any"),
       selectInput("time_window",
-                  "Time segments: NOT IMPLEMENTED YET!",
+                  "Time segment (years):",
                   choices = list(20,
                                  10,
                                  5,
@@ -77,6 +77,13 @@ shinyUI(fluidPage(
     mainPanel(
       # textOutput("sanity_check"),
       tabsetPanel(
+        tabPanel("Summary",
+                 h3("Search summary",
+                    class = "text-center"),
+                 tableOutput("summary_table"),
+                 textOutput("intro_text")
+                 # for styling: <div> id = summary_table
+                 ),
         tabPanel("Books/Pamphlets",
                  h3("Paper consumption: books vs. pamphlets",
                     class = "text-center"),

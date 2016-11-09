@@ -35,12 +35,19 @@ plot_paper_consumption_books_vs_pamphlets <- function (dataset) {
 plot_relative_titlecount_timeline <- function(df0, df0.allplaces, df.preprocessed,
                                               df.preprocessed.allplaces,
                                               selected.place = "All",
-                                              myfield = "titlecount") {
+                                              myfield = "titlecount",
+                                              time_window = 10) {
   # Compare the selected field in between the two data sets
-  df <- timeline_relative(df0, df.preprocessed, myfield)
+  df <- timeline_relative(df0,
+                          df.preprocessed, 
+                          myfield, 
+                          time.window = time_window)
   df$group <- rep(selected.place, nrow(df))
   if (!selected.place == "All") {
-    df.allplaces <- timeline_relative(df0.allplaces, df.preprocessed.allplaces, myfield)
+    df.allplaces <- timeline_relative(df0.allplaces,
+                                      df.preprocessed.allplaces,
+                                      myfield,
+                                      time.window = time_window)
     df.allplaces$group <- rep("All", nrow(df.allplaces))
     df <- bind_rows(df, df.allplaces)
   }
@@ -69,8 +76,11 @@ plot_relative_titlecount_timeline <- function(df0, df0.allplaces, df.preprocesse
 }
 
 
-plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
-                                     myfield = "titlecount") {
+plot_titlecount_timeline <- function(df0,
+                                     df0.allplaces,
+                                     selected.place = "All",
+                                     myfield = "titlecount",
+                                     time_window = 10) {
   # If selected place is given, then show
   # both the selected and all places
   # myfield <- "titlecount"
@@ -82,7 +92,8 @@ plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
   # Standard timeline
   # If place selection is applied then show both the
   # selected place and total data
-  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute") +
+  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute",
+                      time.window = time_window) +
     ylab("Title count (n)") + ggtitle("Total title count timeline ()") 
   #guides(fill = "none") 
   
@@ -99,7 +110,7 @@ plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
 
 # !REFRACTOR and combine with plot_titlecount_timeline above -vv
 plot_paper_consumption_timeline <- function(df0, df0.allplaces, selected.place = "All",
-                                            myfield = "paper") {
+                                            myfield = "paper", time_window) {
   # myfield <- "paper"
   df1 <- NULL
   if (!selected.place == "All") {
@@ -109,7 +120,8 @@ plot_paper_consumption_timeline <- function(df0, df0.allplaces, selected.place =
   # Standard timeline
   # If place selection is applied then show both the
   # selected place and total data
-  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute") +
+  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute",
+                      time.window = time_window) +
     ylab("Paper (sheets)") + ggtitle("Total paper consumption timeline ()") 
   #	guides(fill = "none")	
   
@@ -127,12 +139,16 @@ plot_relative_paper_consumption_timeline <- function(df0, df0.allplaces,
                                                      df.preprocessed,
                                                      df.preprocessed.allplaces,
                                                      selected.place = "All",
-                                                     myfield = "paper") {
+                                                     myfield = "paper",
+                                                     time_window = 10) {
   # Compare the selected field in between the two data sets
-  df <- timeline_relative(df0, df.preprocessed, myfield)
+  df <- timeline_relative(df0, df.preprocessed, myfield, time_window)
   df$group <- rep(selected.place, nrow(df))
   if (!selected.place == "All") {
-    df.allplaces <- timeline_relative(df0.allplaces, df.preprocessed.allplaces, myfield)
+    df.allplaces <- timeline_relative(df0.allplaces,
+                                      df.preprocessed.allplaces,
+                                      myfield,
+                                      time_window)
     df.allplaces$group <- rep("All", nrow(df.allplaces))
     df <- bind_rows(df, df.allplaces)
   }

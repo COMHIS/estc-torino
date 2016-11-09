@@ -20,9 +20,7 @@ library(stringi)
 
 nchar <- 40
 ntop <- 20
-time_window <- 10
-dataset <- readRDS("../inst/examples/data/estc_df.Rds")
-dataset <- augment_original_data(dataset, time_window)
+dataset_from_rds <- readRDS("../inst/examples/data/estc_df.Rds")
 theme_set(theme_bw(12))
 
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
@@ -40,7 +38,6 @@ get_filtered_dataset_sans_ids <- function(input, dataset) {
   min_year <- input$range_years[1]
   max_year <- input$range_years[2]
   selected_place <- input$publication_place
-  # time_window <- input$time_window
   selected_language <- input$language
   selected_document_type <- input$document_type
   
@@ -84,6 +81,16 @@ shinyServer(function(input, output) {
   session_randomhash <- stri_rand_strings(1, 8)
   
   # reactive elements
+
+  time_window_numeric <- reactive({
+    as.numeric(input$time_window)
+  })
+  
+    
+  get_dataset_augmented <- reactive({
+    augment_original_data(dataset_from_rds,
+                          time_window_numeric())
+  })
   
   sanity <- reactive({
     sanitized_term <- sanitize_term(input$search_term)
@@ -93,7 +100,7 @@ shinyServer(function(input, output) {
   
   filtered_dataset_sans_ids <- reactive({
     if (sanity()) {
-      get_filtered_dataset_sans_ids(input, dataset)
+      get_filtered_dataset_sans_ids(input, get_dataset_augmented())
     }
   })
 
@@ -116,31 +123,72 @@ shinyServer(function(input, output) {
     if (!sanity) {
       showNotification("Please enter a valid search string. (Length > 4, no special characters.)",
                        duration = NULL,
-                       id = "sanity", type = "error")
+                       id = "sanity",
+                       type = "error")
     } else {
       removeNotification(id = "sanity")
     }
   })
   
-  save_search_term <- observe({
-    sanity_state <- paste("sanity:", sanity())
-    log_line <- paste(input$search_term,
-                      session_randomhash,
-                      session_starttime,
-                      sanity_state,
-                      sep = " --- ")
-    log_file <- file("logs/search_log.txt", open = "at")
-    log_line <- paste0(log_line, "\n")
-    cat(log_line, file = log_file, append = TRUE)
+  log_search_term <- observe({
+    if (!(input$search_term == "")) {
+      sanity_state <- paste("sanity:", sanity())
+      log_line <- paste(input$search_term,
+                        session_randomhash,
+                        # session_starttime,
+                        Sys.time(),
+                        sanity_state,
+                        sep = " --- ")
+      log_file_path <- paste0("logs/", "search_log-", Sys.Date(), ".txt")
+      log_file <- file(log_file_path, open = "at")
+      log_line <- paste0(log_line, "\n")
+      cat(log_line, file = log_file, append = TRUE)
+      close(log_file)
+    }
   })
 
-  # outputs
-  # 
-  # output$sanity_check <- renderText({
-  #   if (!sanity()) {
-  #     "Please enter a (somewhat) sane search term!"
-  #   }
-  # })
+  # summary tab outputs
+
+  output$intro_text <- renderText({
+    if (!sanity()) {
+      "Some informative and helpful text on how to use the app.
+      It will disappear with a valid search string."
+    }    
+  })
+  
+  output$summary_table <- renderTable({
+    if (sanity()) {
+      selected_years <- paste(input$range_years[1], input$range_years[2], sep = " - ")
+      api_query_hits <- nrow(query_ids())
+      output_query_hits_in_data_original <- 
+        get_query_summary_string(query_ids(), get_dataset_augmented())
+      output_query_hits_in_data_subset <- 
+        get_query_summary_string(query_ids(), filtered_dataset()$place_filtered)
+      
+      # hitn0 <- query_hits_in_data_original$hits_amount
+      # hitp0 <- query_hits_in_data_original$percentile
+      # 
+      
+      input_values <- list("Search string" = input$search_term,
+                           "Years" = selected_years,
+                           "Publication place" = input$publication_place,
+                           "Language" = input$language,
+                           "Time segment" = input$time_window,
+                           "Document type" = input$document_type,
+                           "ECCO API query hits" = api_query_hits,
+                           "API hits in complete ESTC" =
+                             output_query_hits_in_data_original,
+                           "Hits after filtering for year, place, etc." =
+                             output_query_hits_in_data_subset
+                           )
+      summary_table <- t(data.frame(input_values))
+      # fix dots in rownames that resulted from conversion into dataframe:
+      rownames(summary_table) <- gsub("\\."," ",rownames(summary_table))
+      return(summary_table)
+    }
+  }, rownames = TRUE, colnames = FALSE)
+  
+  # plot outputs
   
   output$books_vs_pamphlets_plot <- renderPlot({
     if (sanity()) {
@@ -205,7 +253,8 @@ shinyServer(function(input, output) {
       withProgress(message = 'Plotting titles timeline...', value = 0.5, {
         plot_titlecount_timeline(filtered_dataset()$place_filtered,
                                  filtered_dataset()$place_all,
-                                 input$publication_place)
+                                 input$publication_place,
+                                 time_window = time_window_numeric())
       })
     }
   })
@@ -217,7 +266,8 @@ shinyServer(function(input, output) {
                                           filtered_dataset()$place_all,
                                           filtered_dataset_sans_ids()$place_subsetted,
                                           filtered_dataset_sans_ids()$all_places,
-                                          input$publication_place)
+                                          input$publication_place,
+                                          time_window = time_window_numeric())
       })
     }
   })
@@ -227,7 +277,8 @@ shinyServer(function(input, output) {
       withProgress(message = 'Plotting paper consumption...', value = 0.5, {
         plot_paper_consumption_timeline(filtered_dataset()$place_filtered,
                                         filtered_dataset()$place_all,
-                                        input$publication_place)
+                                        input$publication_place,
+                                        time_window = time_window_numeric())
       })
     }
   })
@@ -240,7 +291,8 @@ shinyServer(function(input, output) {
                                                  filtered_dataset_sans_ids()$place_subsetted,
                                                  filtered_dataset_sans_ids()$all_places,
                                                  input$publication_place,
-                                                 myfield = "paper")
+                                                 myfield = "paper",
+                                                 time_window = time_window_numeric())
       })
     }
   })
@@ -335,7 +387,7 @@ shinyServer(function(input, output) {
   
   output$top_titlehits_edition_by_edition_plot <- renderPlot({
     if (sanity()) {
-      withProgress(message = 'Plotting top titles by edition...', value = 0.5, {
+      withProgress(message = 'Plotting some nefarious plots...', value = 0.5, {
         total_titlehits <- get_total_titlehits(filtered_dataset()$place_filtered,
                                                query_ids(),
                                                nchar = nchar)
