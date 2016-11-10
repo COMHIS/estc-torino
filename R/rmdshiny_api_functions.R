@@ -55,15 +55,27 @@ get_query_terms <- function(terms_dataframe) {
   return(top50merged)
 }
 
+validate_json <- function(jsondata) {
+  conversion_results <- fromJSON(jsondata)
+  if (length(conversion_results > 0)) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
 get_rest_query_results <- function(search_term,
                                    rest_api_url,
                                    terms_conf = "&d=1&cp=1",
                                    fields) {
   terms_json <- get_rest_api_terms(rest_api_url, search_term, terms_conf, fields)
-  terms_df <- termset_json_to_dataframe(terms_json)
-  terms_top50 <- get_query_terms(terms_df)
-  query_results <- get_search_results(rest_api_url, terms_top50, fields)
-  return(query_results)
+  if (validate_json(terms_json) == FALSE) {
+    return(NULL) 
+  } else {
+    terms_df <- termset_json_to_dataframe(terms_json)
+    terms_top50 <- get_query_terms(terms_df)
+    query_results <- get_search_results(rest_api_url, terms_top50, fields)
+    return(query_results)
+  }
 }
 
 enrich_rest_query_results <- function(rest_query_results) {
@@ -84,6 +96,9 @@ get_query_ids_from_api <- function(input, rest_api_url, terms_conf, fields) {
                                           rest_api_url,
                                           terms_conf,
                                           fields)
+  if (is.null(query_results)) {
+    return(NULL)
+  }
   enriched_query_results <- enrich_rest_query_results(query_results)
   return(enriched_query_results)
 }

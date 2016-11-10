@@ -8,7 +8,8 @@
 library(shiny)
 
 shinyUI(fluidPage(
-  
+
+  includeCSS("styles.css"),  
   # Application title
   titlePanel("ESTC Report"),
   
