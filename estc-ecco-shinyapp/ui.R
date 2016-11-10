@@ -27,6 +27,20 @@ shinyUI(fluidPage(
       textInput("search_term",
                 "Search string:",
                 ""),
+      selectInput("search_fields", "Search fields:",
+                  choices = list("All fields" = "contents_headings_all",
+                                 "Titlepages" = "contents_titlepage",
+                                 "Headings all fields" = "headings_all",
+                                 "Frontmatter" = "contents_headings_frontmatter",
+                                 "Backmatter" = "contents_headings_backmatter"),
+                  selected = "contents_headings_all"
+                   ),
+      # 0. pelkkä contents:titlepage
+      # 1. Contents + headings kaikki
+      # 2. Contents +headings (frontmatter)
+      # 3. Contents +headings (backmatter)
+      # 4. Headings (index frontmatter backmatter body TOC)
+      
       sliderInput("range_years",
                   "Years:",
                   min = 1700,

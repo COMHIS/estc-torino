@@ -1,5 +1,27 @@
 
 
+get_api_fields_from_input <- function(selected_fields) {
+  switch(selected_fields,
+         "contents_headings_all" = {
+           return("&f=heading_index&f=heading_frontmatter&f=heading_backmatter&f=heading_body&f=heading_TOC&f=contents_index&f=contents_frontmatter&f=contents_TOC&f=contents_titlePage&f=contents_body&f=contents_backmatter")
+         },
+         "contents_titlepage" = {
+           return("&f=contents_titlePage")
+         },
+         "headings_all" = {
+           return("&f=heading_index&f=heading_frontmatter&f=heading_backmatter&f=heading_body&f=heading_TOC")
+         },
+         "contents_headings_frontmatter" = {
+           return("&f=heading_frontmatter&f=contents_frontmatter")
+         },
+         "contents_headings_backmatter" = {
+           return("&f=heading_backmatter&f=contents_backmatter")
+         },
+         return("&f=heading_index&f=heading_frontmatter&f=heading_backmatter&f=heading_body&f=heading_TOC&f=contents_index&f=contents_frontmatter&f=contents_TOC&f=contents_titlePage&f=contents_body&f=contents_backmatter")
+  )
+}
+
+
 termset_json_to_dataframe <- function(termset_json) {
   list_data <- fromJSON(termset_json)
   col1 <- names(list_data)

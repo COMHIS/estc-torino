@@ -110,11 +110,13 @@ shinyServer(function(input, output) {
     if (sanity()) {
       removeNotification(id = "query_null")
       withProgress(message = 'Querying API...', value = 0.5, {
-        get_query_ids_from_api(input, rest_api_url, terms_conf, fields)
+        selected_fields = get_api_fields_from_input(input$search_fields)
+        get_query_ids_from_api(input, rest_api_url, terms_conf, selected_fields)
       })
     }
   })
   
+  # !refractor messy hack
   query_state <- reactive({
     if (is.null(query_ids()) & sanity()){
       return(FALSE)
