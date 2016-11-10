@@ -36,4 +36,6 @@ augment_original_data <- function(dataset, time_window) {
   dataset <- add_document_type(dataset)
   # Set the desired time window (default one decade)
   dataset <- set_time_window(dataset, time_window)
+  return(dataset)
 }
+

@@ -1,0 +1,7 @@
+#summary_table tr > :first-child {
+  font-weight: bold;
+}
+#summary_table table {
+  margin-left: auto;
+  margin-right: auto;
+}

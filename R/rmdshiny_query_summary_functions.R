@@ -35,6 +35,16 @@ get_query_hits_amount <- function(query_ids, data) {
 get_sum_duplicate_ids <- function(ids) {
   # Duplicated entries
   sum_duplicates <- sum(duplicated(ids), na.rm = T)
-  return (sum_duplicates)
+  return(sum_duplicates)
+}
+
+
+get_query_summary_string <- function(query_ids, data){
+  query_hits_in_data <- get_query_hits_amount(query_ids,
+                                                       data)
+  output_query_hits_in_data <- 
+    paste0(query_hits_in_data$hits_amount, " (",
+           round(query_hits_in_data$percentile, 2), " %)")
+  return(output_query_hits_in_data)
 }
 

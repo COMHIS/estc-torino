@@ -104,19 +104,11 @@ library(reshape2)
 library(gridExtra)
 library(knitr)
 library(ggmap)
-#library(stringr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(sorvi)
-# source("R/rmdshiny_report_plot_functions.R")
-# source("R/rmdshiny_setup_functions.R")
-# source("R/rmdshiny_get_subset.R")
-# source("R/rmdshiny_get_custom_ids.R")
-# source("R/rmdshiny_query_summary_functions.R")
-# source("R/rmdshiny_get_top_authors.R")
-# source("R/rmdshiny_get_top_titles.R")
-# source("R/rmdshiny_get_top_publishers.R")
+library(tools)
 
 knitr::opts_chunk$set(echo = FALSE)
 #knitr::opts_chunk$set(fig.path = "figure_slides/", dev="CairoPNG")
@@ -176,7 +168,7 @@ df.preprocessed.allplaces <- data_subset$all_places
 # # Read the custom list of entry IDs
 # # Including also the number of hits per document
 # # and document total length for normalization purposes
-custom.ids <- get_custom_ids(data_subset$place_subsetted, idsource)
+custom.ids <- format_query_ids(idsource)
 
 # #---------------------------------------------------------
 # 
@@ -264,7 +256,9 @@ relative_titlecount_plot <-
                                     df.preprocessed.allplaces,
                                     selected.place)
 
-grid.arrange(titlecount_plot, relative_titlecount_plot, nrow = 1)
+grid.arrange(titlecount_plot,
+             relative_titlecount_plot,
+             nrow = 1)
 ```
 
 

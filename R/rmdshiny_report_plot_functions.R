@@ -25,7 +25,7 @@ plot_paper_consumption_books_vs_pamphlets <- function (dataset) {
                        group = document_type,
                        color = document_type))
   p <- p + geom_point() + scale_y_log10()
-  p <- p + geom_smooth(method = "loess")
+  p <- p + geom_smooth(method = "loess") # span = 0.1
   p <- p + xlab("Year")
   p <- p + ylab("Paper (sheets)")
   return (p)
@@ -35,12 +35,19 @@ plot_paper_consumption_books_vs_pamphlets <- function (dataset) {
 plot_relative_titlecount_timeline <- function(df0, df0.allplaces, df.preprocessed,
                                               df.preprocessed.allplaces,
                                               selected.place = "All",
-                                              myfield = "titlecount") {
+                                              myfield = "titlecount",
+                                              time_window = 10) {
   # Compare the selected field in between the two data sets
-  df <- timeline_relative(df0, df.preprocessed, myfield)
+  df <- timeline_relative(df0,
+                          df.preprocessed, 
+                          myfield, 
+                          time.window = time_window)
   df$group <- rep(selected.place, nrow(df))
   if (!selected.place == "All") {
-    df.allplaces <- timeline_relative(df0.allplaces, df.preprocessed.allplaces, myfield)
+    df.allplaces <- timeline_relative(df0.allplaces,
+                                      df.preprocessed.allplaces,
+                                      myfield,
+                                      time.window = time_window)
     df.allplaces$group <- rep("All", nrow(df.allplaces))
     df <- bind_rows(df, df.allplaces)
   }
@@ -69,8 +76,11 @@ plot_relative_titlecount_timeline <- function(df0, df0.allplaces, df.preprocesse
 }
 
 
-plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
-                                     myfield = "titlecount") {
+plot_titlecount_timeline <- function(df0,
+                                     df0.allplaces,
+                                     selected.place = "All",
+                                     myfield = "titlecount",
+                                     time_window = 10) {
   # If selected place is given, then show
   # both the selected and all places
   # myfield <- "titlecount"
@@ -82,7 +92,8 @@ plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
   # Standard timeline
   # If place selection is applied then show both the
   # selected place and total data
-  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute") +
+  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute",
+                      time.window = time_window) +
     ylab("Title count (n)") + ggtitle("Total title count timeline ()") 
   #guides(fill = "none") 
   
@@ -99,7 +110,7 @@ plot_titlecount_timeline <- function(df0, df0.allplaces, selected.place = "All",
 
 # !REFRACTOR and combine with plot_titlecount_timeline above -vv
 plot_paper_consumption_timeline <- function(df0, df0.allplaces, selected.place = "All",
-                                            myfield = "paper") {
+                                            myfield = "paper", time_window) {
   # myfield <- "paper"
   df1 <- NULL
   if (!selected.place == "All") {
@@ -109,7 +120,8 @@ plot_paper_consumption_timeline <- function(df0, df0.allplaces, selected.place =
   # Standard timeline
   # If place selection is applied then show both the
   # selected place and total data
-  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute") +
+  p1 <- plot_timeline(df0, df1, field = myfield, nmin = 0, mode = "absolute",
+                      time.window = time_window) +
     ylab("Paper (sheets)") + ggtitle("Total paper consumption timeline ()") 
   #	guides(fill = "none")	
   
@@ -127,12 +139,16 @@ plot_relative_paper_consumption_timeline <- function(df0, df0.allplaces,
                                                      df.preprocessed,
                                                      df.preprocessed.allplaces,
                                                      selected.place = "All",
-                                                     myfield = "paper") {
+                                                     myfield = "paper",
+                                                     time_window = 10) {
   # Compare the selected field in between the two data sets
-  df <- timeline_relative(df0, df.preprocessed, myfield)
+  df <- timeline_relative(df0, df.preprocessed, myfield, time_window)
   df$group <- rep(selected.place, nrow(df))
   if (!selected.place == "All") {
-    df.allplaces <- timeline_relative(df0.allplaces, df.preprocessed.allplaces, myfield)
+    df.allplaces <- timeline_relative(df0.allplaces,
+                                      df.preprocessed.allplaces,
+                                      myfield,
+                                      time_window)
     df.allplaces$group <- rep("All", nrow(df.allplaces))
     df <- bind_rows(df, df.allplaces)
   }
@@ -174,7 +190,7 @@ plot_books_vs_pamphlets <- function(df0) {
                        color = document_type))
   
   p <- p + geom_point() + scale_y_log10() 
-  p <- p + geom_smooth(method = "loess")
+  p <- p + geom_smooth(method = "loess", span = 0.1)
   p <- p + xlab("Year")
   p <- p + ylab("Paper (sheets)")
   
@@ -208,18 +224,19 @@ plot_top_authors_hits_per_edition <- function(top_authors_by_edition) {
 
 plot_titlecount_timeline_for_top10_authors <- function(df0, top_authors_n = 10){
   df <- df0
-  theme_set(theme_bw(20))
+  # theme_set(theme_bw(20))
   top.authors <- names(top(df, field = "author", n = top_authors_n))
   dfs <- df %>% filter(author %in% top.authors) %>%
     group_by(author, publication_time) %>%
     tally() %>%
     arrange(publication_time)
   v <- seq(min(dfs$publication_time), max(dfs$publication_time), 20)
-  p <- ggplot(dfs, aes(x = publication_time, y = n, fill = author)) +
-    geom_bar(stat = "identity", position = "stack", color = "black") +
+  p <- ggplot(dfs, aes(x = publication_time, y = n, fill = author)) + # , color = "black"
+    geom_bar(stat = "identity", position = "stack") +
     xlab("Publication time") +
     ylab("Title count (n)") +
-    scale_fill_grey() +
+    # scale_fill_grey() +
+    scale_fill_hue() +
     scale_x_continuous(breaks = v, labels = v) +
     guides(fill = guide_legend("Author", reverse = TRUE)) 
   return(p)
