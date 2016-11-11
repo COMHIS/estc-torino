@@ -9,6 +9,7 @@ library(shiny)
 
 shinyUI(fluidPage(
 
+  # tags$head(tags$link(rel = "icon", type = "image/png", href = "www/favicon48.png")),
   includeCSS("styles.css"),  
   # Application title
   titlePanel("ESTC Report"),

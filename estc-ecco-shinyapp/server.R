@@ -2,7 +2,6 @@
 library(shiny)
 library(devtools)
 load_all("../R/bibliographica")
-library(bibliographica)
 load_all()
 library(magrittr)
 library(reshape2)
@@ -25,7 +24,7 @@ theme_set(theme_bw(12))
 
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
 terms_conf <- "&d=1&cp=1"
-fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=metadata_fullTitle&f=heading_TOC&f=contents_titlePage&f=contents_body"
+# fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=metadata_fullTitle&f=heading_TOC&f=contents_titlePage&f=contents_body"
 
 
 get_idsource_fullpath <- function(idsource) {
@@ -116,7 +115,7 @@ shinyServer(function(input, output) {
     }
   })
   
-  # !refractor messy hack
+  # !refractor not pretty
   query_state <- reactive({
     if (is.null(query_ids()) & sanity()){
       return(FALSE)
