@@ -26,7 +26,6 @@ rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
 terms_conf <- "&d=1&cp=1"
 # fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=metadata_fullTitle&f=heading_TOC&f=contents_titlePage&f=contents_body"
 
-
 get_idsource_fullpath <- function(idsource) {
   idsource_fullpath <- paste0("../inst/examples/data/", idsource)
   return(idsource_fullpath)
@@ -50,17 +49,18 @@ get_filtered_dataset_sans_ids <- function(input, dataset) {
 }
 
 
-get_filtered_dataset_api <- function(input, dataset) {
-  query_ids <- get_query_ids_from_api(input, rest_api_url, terms_conf, fields)
-  data_subset <- get_filtered_dataset_sans_ids(input, dataset)
-  filtered_dataset <- subset(data_subset$place_subsetted,
-                             id %in% query_ids$id)
-  filtered_dataset_allplaces <- subset(data_subset$all_places,
-                                       id %in% query_ids$id)
-  filtered_dataset_list <- list(place_filtered = filtered_dataset,
-                                place_all = filtered_dataset_allplaces)
-  return(filtered_dataset_list)
-}
+# get_filtered_dataset_api <- function(input, dataset) {
+#   query_ids <- get_query_ids_from_api(input, rest_api_url, terms_conf, fields)
+#   data_subset <- get_filtered_dataset_sans_ids(input, dataset)
+#   filtered_dataset <- subset(data_subset$place_subsetted,
+#                              id %in% query_ids$id)
+#   filtered_dataset_allplaces <- subset(data_subset$all_places,
+#                                        id %in% query_ids$id)
+#   filtered_dataset_list <- list(place_filtered = filtered_dataset,
+#                                 place_all = filtered_dataset_allplaces)
+#   return(filtered_dataset_list)
+# }
+
 
 get_idfiltered_dataset <- function(query_ids, dataset) {
   filtered_dataset <- subset(dataset$place_subsetted,
@@ -163,9 +163,9 @@ shinyServer(function(input, output) {
                         sanity_line,
                         query_line,
                         sep = " --- ")
+      log_line <- paste0(log_line, "\n")
       log_file_path <- paste0("logs/", "search_log-", Sys.Date(), ".txt")
       log_file <- file(log_file_path, open = "at")
-      log_line <- paste0(log_line, "\n")
       cat(log_line, file = log_file, append = TRUE)
       close(log_file)
     }

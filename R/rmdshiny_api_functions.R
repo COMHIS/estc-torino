@@ -42,6 +42,11 @@ get_search_results <- function(rest_api_url, query_terms, fields) {
   return(search_results)
 }
 
+get_api_query_search_results <- function(api_query) {
+  search_results <- read.csv(api_query, header = TRUE)
+  return(search_results)
+}
+
 sanitize_term <- function(term){
   term <- as.character(term)
   term <- tolower(term)
@@ -76,6 +81,7 @@ get_query_terms <- function(terms_dataframe) {
   top50merged <- gsub(" ", "%20", top50merged)
   return(top50merged)
 }
+
 
 validate_json <- function(jsondata) {
   conversion_results <- fromJSON(jsondata)
@@ -124,5 +130,3 @@ get_query_ids_from_api <- function(input, rest_api_url, terms_conf, fields) {
   enriched_query_results <- enrich_rest_query_results(query_results)
   return(enriched_query_results)
 }
-
-

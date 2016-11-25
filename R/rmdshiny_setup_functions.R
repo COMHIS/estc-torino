@@ -30,7 +30,7 @@ set_time_window <- function(df.orig, time.window = 10) {
 }
 
 
-augment_original_data <- function(dataset, time_window) {
+augment_original_data <- function(dataset, time_window = 10) {
   dataset <- add_metadata_id_field(dataset)
   # Add document type
   dataset <- add_document_type(dataset)
