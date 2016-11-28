@@ -69,8 +69,9 @@ shinyServer(function(input, output) {
   
 
   baseline_yearly_pubs <- reactive({
+    query_set <- api_query_set()$base_query
     baseline_yearly <-
-      get_pubs_yearly_for_query(api_query_set()$base_query, dataset)
+      get_pubs_yearly_for_query(query_set$query, dataset)
     return(baseline_yearly)
   })
   
@@ -80,7 +81,6 @@ shinyServer(function(input, output) {
     comparable_sets_list <- vector("list", length(comparables_api_queries))
     i <- 1
     for (comparable_api_query_set in comparables_api_queries) {
-      print(paste0("foo", i))
       relative_hits_yearly <- get_relative_hits_yearly_for_query(
         comparable_api_query_set$query,
         baseline_yearly, dataset)
@@ -88,21 +88,28 @@ shinyServer(function(input, output) {
       query_set <- list(term = query_term,
                         data = relative_hits_yearly)
       comparable_sets_list[[i]] <- query_set
-      # print(query_set)
-      # print(comparable_sets_list)
       i <- i + 1
     }
     return(comparable_sets_list)
   })
 
-  # get_query_sets_list <- reactive({ 
-  #   list(first = comparable_set1())
-  # })
-
   output$freq_plot <- renderPlot({
     query_sets_list <- comparable_sets_list()
     print(query_sets_list)
-    plot <- plot_titlecount_relative(title = "testi", query_sets_list)
+    title <- paste0(input$baseline_term, " --- timeline for co-terms in document")
+    plot <- plot_titlecount_relative(title = title, query_sets_list)
     return(plot)
   })
+  
+  # output$freq_plot_download <- downloadHandler(
+  #   filename = function() {
+  #     paste0(input$baseline_term, "-co-term-timeline-",Sys.Date(), ".png")
+  #   },
+  #   content = function(con){
+  #     
+  #   }
+  # )
+  # output$paragraph_plot <- renderPlot({
+  #   
+  # })
 })

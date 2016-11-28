@@ -25,3 +25,5 @@ inst/examples/tmp.R
 R/bibliographica
 estc-ecco-shinyapp/logs
 estc-ecco-shinyapp/data
+
+trend-comparison-shinyapp/testdata

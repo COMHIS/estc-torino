@@ -8,6 +8,7 @@ process_search_term <- function(search_term){
 fix_query_chars <- function(query) {
   query <- gsub(" ", "%20", query)
   query <- gsub("\\+", "%2B", query)
+  query <- gsub("\"", "%22", query)
   return(query)
 }
 
@@ -17,6 +18,7 @@ get_api_query_set <- function(baseterm, comparables) {
   results <- "&rf=metadata_ESTCID&mf=1"
   base_query <- paste0(api_url, baseterm, fields, results)
   base_query <- fix_query_chars(base_query)
+  base_query_set <- list(term = baseterm, query = base_query)
   comparable_queries <- vector("list", length(comparables))
   
   i <- 1
@@ -28,7 +30,7 @@ get_api_query_set <- function(baseterm, comparables) {
     i <- i + 1
   }
   
-  return(list(base_query = base_query, comparable_queries = comparable_queries))
+  return(list(base_query = base_query_set, comparable_queries = comparable_queries))
 }
 
 
@@ -49,3 +51,35 @@ get_relative_hits_yearly_for_query <- function(api_query,
   relative_hits_yearly <- get_relative_hits_yearly(pubs_yearly, baseline_yearly)
   return(relative_hits_yearly)
 }
+
+get_api2_query <- function(term = "+religion",
+                          api_url = "https://vm0175.kaj.pouta.csc.fi/ecco-search2/jsearch?query=",
+                          api_return_fields = "&field=ESTCID") {
+  api2_params <- "&limit=2147483647"
+  api2_query <- paste0(api_url, term, api_return_fields, api2_params)
+  api2_query <- fix_query_chars(api2_query)
+  return(api2_query)
+}
+
+get_api2_query_set <- function(base_term, comparable_terms) {
+  base_set <- list(base_term, get_api2_query(term = base_term))
+  
+  comparable_query_sets <-  vector("list", length(comparable_terms))
+  i <- 1
+  for (comparable_term in comparable_terms) {
+    comparable_term <- paste0(base_term, " +(", comparable_term, ")")
+    comparable_set <- list(comparable_term, get_api2_query(term = comparable_term))
+    comparable_query_sets[[i]] <- comparable_set
+    i <- i + 1
+  }
+  api2_query_set <- list(base_query_set = base_set,
+                         comparable_query_sets = comparable_query_sets)
+  return(api2_query_set)
+}
+
+# get_api2_jsearch_query_results_df <- function(query) {
+#   # results is json
+#   jsonlite
+# }
+
+
