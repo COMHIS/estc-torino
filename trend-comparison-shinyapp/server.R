@@ -33,6 +33,7 @@ source("get_query_set_list.R")
 source("plot_functions.R")
 source("search_api_functions.R")
 source("ecco-api2_functions.R")
+source("paragraph_analysis_functions.R")
 
 dataset <- augment_original_data(readRDS("../inst/examples/data/estc_df.Rds"))
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
