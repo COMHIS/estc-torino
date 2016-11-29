@@ -12,7 +12,7 @@ get_yearly_freqs_molten_df <- function(query_sets_list) {
     graphdata_df[colname] <- freqs
   }
 
-  molten_df <- melt(data = graphdata_df, id.vars = "year")
+  molten_df <- reshape2::melt(data = graphdata_df, id.vars = "year")
   return(molten_df)
 }
 
@@ -29,11 +29,10 @@ plot_titlecount_relative <- function(title = "placeholder",
          x = "Year",
          y = "Frequency",
          colour = "Search term") +
-    # scale_x_continuous(breaks = pretty(graphdata_df$year, n = 20)) +
     scale_x_continuous(breaks = 
       round(seq(min(graphdata_df$year), max(graphdata_df$year + 4), 5), 1)) +
     theme_linedraw() +
-    theme(axis.text.x = element_text(size = 8, angle = -90),
+    theme(axis.text.x = element_text(size = 9, angle = -90),
           axis.title.x = element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom")

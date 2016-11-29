@@ -18,6 +18,9 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
+      radioButtons("mode", label = NULL,
+                   choices = list("books", "paragraphs"),
+                   selected = "books"),
       textInput("baseline_term",
                 "Baseline term:",
                 "politeness"),

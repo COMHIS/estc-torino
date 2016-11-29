@@ -32,6 +32,7 @@ source("query_summary_functions.R")
 source("get_query_set_list.R")
 source("plot_functions.R")
 source("search_api_functions.R")
+source("ecco-api2_functions.R")
 
 dataset <- augment_original_data(readRDS("../inst/examples/data/estc_df.Rds"))
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
@@ -63,40 +64,56 @@ shinyServer(function(input, output) {
   
   api_query_set <- reactive({
     comparables <- input_comparables()
-    api_query_set <- get_api_query_set(input$baseline_term, comparables)
+    print(input$mode)
+    print(typeof(input$mode))
+    print(input$mode == "books")
+    if (input$mode == "books") {
+      api_query_set <- get_api_query_set(input$baseline_term, comparables)
+    } else {
+      api_query_set <- get_api2_query_set(input$baseline_term, comparables)
+    }
     return(api_query_set)
+    
   })
   
 
   baseline_yearly_pubs <- reactive({
-    query_set <- api_query_set()$base_query
-    baseline_yearly <-
-      get_pubs_yearly_for_query(query_set$query, dataset)
-    return(baseline_yearly)
+    if (input$mode == "books") {
+      query_set <- api_query_set()$base_query
+      baseline_yearly <-
+        get_pubs_yearly_for_query(query_set$query, dataset)
+      return(baseline_yearly)
+    }
   })
   
   comparable_sets_list <- reactive({
-    baseline_yearly = baseline_yearly_pubs()
-    comparables_api_queries <- api_query_set()$comparable_queries
-    comparable_sets_list <- vector("list", length(comparables_api_queries))
-    i <- 1
-    for (comparable_api_query_set in comparables_api_queries) {
-      relative_hits_yearly <- get_relative_hits_yearly_for_query(
-        comparable_api_query_set$query,
-        baseline_yearly, dataset)
-      query_term <- comparable_api_query_set$term
-      query_set <- list(term = query_term,
-                        data = relative_hits_yearly)
-      comparable_sets_list[[i]] <- query_set
-      i <- i + 1
+    if (input$mode == "books") {
+      baseline_yearly = baseline_yearly_pubs()
+      comparables_api_queries <- api_query_set()$comparable_queries
+      comparable_sets_list <- vector("list", length(comparables_api_queries))
+      i <- 1
+      for (comparable_api_query_set in comparables_api_queries) {
+        relative_hits_yearly <- get_relative_hits_yearly_for_query(
+          comparable_api_query_set$query,
+          baseline_yearly, dataset)
+        query_term <- comparable_api_query_set$term
+        query_set <- list(term = query_term,
+                          data = relative_hits_yearly)
+        comparable_sets_list[[i]] <- query_set
+        i <- i + 1
+      }
+    } else {
+      paragraph_query_set <- api_query_set()
+      comparable_sets_list <- 
+        get_yearly_paragraph_frequencies_list(paragraph_query_set, dataset)
     }
     return(comparable_sets_list)
   })
 
   output$freq_plot <- renderPlot({
     query_sets_list <- comparable_sets_list()
-    print(query_sets_list)
-    title <- paste0(input$baseline_term, " --- timeline for co-terms in document")
+    # print(query_sets_list)
+    title <- paste0(input$baseline_term, " --- timeline for co-terms in ", input$mode)
     plot <- plot_titlecount_relative(title = title, query_sets_list)
     return(plot)
   })
