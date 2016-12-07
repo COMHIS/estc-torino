@@ -9,7 +9,7 @@ get_total_titlehits <- function(df0, custom.ids, field = "title", nchar = 40) {
   df$names <- df[[field]]
   dfs.total <- df %>% group_by(names) %>%
     filter(!is.na(names)) %>% 
-    summarise(n = n(), # number of editions
+    dplyr::summarise(n = n(), # number of editions
               count = sum(hits, na.rm = T)) %>% # number of hits
     mutate(hits.per.edition = count/n)
   # Limit title length

@@ -25,15 +25,15 @@ library(tools)
 library(RCurl)
 library(jsonlite)
 library(stringi)
-library(plyr)
+library(plyr) # this might be a problem
 
-source("dataset_processing_functions.R")
+# source("dataset_processing_functions.R")
 source("query_ids_functions.R")
 source("query_summary_functions.R")
 source("get_query_set_list.R")
 source("plot_functions.R")
 source("search_api_functions.R")
-source("ecco-api2_functions.R")
+# source("ecco-api2_functions.R")
 source("paragraph_analysis_functions.R")
 
 dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))

@@ -13,7 +13,7 @@ get_top_publishers_abs_hits <- function(dataset,
   df$names <- df[[field]]
   dfs <- df %>% group_by(names) %>%
     filter(!is.na(names)) %>% 
-    summarise(count = sum(hits, na.rm = T)) %>%
+    dplyr::summarise(count = sum(hits, na.rm = T)) %>%
     arrange(desc(count)) %>%
     head(ntop)
   

@@ -3,7 +3,6 @@ library(shiny)
 library(devtools)
 load_all("../R/bibliographica")
 load_all("../R/estc")
-load_all()
 library(magrittr)
 library(reshape2)
 library(gridExtra)
@@ -17,6 +16,8 @@ library(tools)
 library(RCurl)
 library(jsonlite)
 library(stringi)
+load_all()
+# print("foo")
 
 nchar <- 40
 ntop <- 20
@@ -30,48 +31,6 @@ terms_conf <- "&d=1&cp=1"
 get_idsource_fullpath <- function(idsource) {
   idsource_fullpath <- paste0("../data/", idsource)
   return(idsource_fullpath)
-}
-
-
-get_filtered_dataset_sans_ids <- function(input, dataset) {
-  min_year <- input$range_years[1]
-  max_year <- input$range_years[2]
-  selected_place <- input$publication_place
-  selected_language <- input$language
-  selected_document_type <- input$document_type
-  
-  data_subset <- get_subset(dataset,
-                            min_year,
-                            max_year,
-                            selected_language,
-                            selected_document_type,
-                            selected_place)
-  return(data_subset)
-}
-
-
-# get_filtered_dataset_api <- function(input, dataset) {
-#   query_ids <- get_query_ids_from_api(input, rest_api_url, terms_conf, fields)
-#   data_subset <- get_filtered_dataset_sans_ids(input, dataset)
-#   filtered_dataset <- subset(data_subset$place_subsetted,
-#                              id %in% query_ids$id)
-#   filtered_dataset_allplaces <- subset(data_subset$all_places,
-#                                        id %in% query_ids$id)
-#   filtered_dataset_list <- list(place_filtered = filtered_dataset,
-#                                 place_all = filtered_dataset_allplaces)
-#   return(filtered_dataset_list)
-# }
-
-
-get_idfiltered_dataset <- function(query_ids, dataset) {
-  filtered_dataset <- subset(dataset$place_subsetted,
-                             id %in% query_ids$id)
-  filtered_dataset_allplaces <- subset(dataset$all_places,
-                                       id %in% query_ids$id)
-  filtered_dataset_list <- list(place_filtered = filtered_dataset,
-                                place_all = filtered_dataset_allplaces)
-  return(filtered_dataset_list)
-  
 }
 
 
@@ -100,7 +59,8 @@ shinyServer(function(input, output) {
   
   filtered_dataset_sans_ids <- reactive({
     if (sanity() & query_state()) {
-      get_filtered_dataset_sans_ids(input, get_dataset_augmented())
+      filtered_dataset_sans_ids <- get_filtered_dataset_sans_ids(input, get_dataset_augmented())
+      return(filtered_dataset_sans_ids)
     }
   })
 

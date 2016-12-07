@@ -11,7 +11,7 @@ get_hits_per_author <- function (dataset, custom.ids, field = "author", nchar = 
   hits_author$names <- hits_author[[field]]
   hits_author_total <- hits_author %>% group_by(names) %>%
     filter(!is.na(names)) %>%
-    summarise(count = sum(hits, na.rm = T), n = n()) %>%
+    dplyr::summarise(count = sum(hits, na.rm = T), n = n()) %>%
     mutate(hits.per.edition = count / n)
   
   # Limit title length

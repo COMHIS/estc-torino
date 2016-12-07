@@ -17,7 +17,7 @@ plot_top_titles_by_title_count <- function (dataset, nchar = 40, ntop = 20) {
 plot_paper_consumption_books_vs_pamphlets <- function (dataset) {
   df <- dataset
   df2 <- df %>% group_by(publication_year, document_type) %>%
-    summarize(paper = sum(paper, na.rm = TRUE),
+    dplyr::summarize(paper = sum(paper, na.rm = TRUE),
               n = n()) %>%
     filter(!is.na(document_type))
   p <- ggplot(df2, aes(x = publication_year,
@@ -181,7 +181,7 @@ plot_relative_paper_consumption_timeline <- function(df0, df0.allplaces,
 plot_books_vs_pamphlets <- function(df0) {
   df <- df0
   df2 <- df %>% group_by(publication_year, document_type) %>%
-    summarize(paper = sum(paper, na.rm = TRUE), n = n()) %>%
+    dplyr::summarize(paper = sum(paper, na.rm = TRUE), n = n()) %>%
     filter(!is.na(document_type))
   
   p <- ggplot(df2, aes(x = publication_year,
@@ -264,7 +264,7 @@ titlecount_queryhits_relation_plot <- function(df0, custom.ids,
   # Title counts
   dfs <- df %>% group_by(names) %>%
     filter(!is.na(names)) %>% 
-    summarise(n = n(), hits = sum(hits, na.rm = T))
+    dplyr::summarise(n = n(), hits = sum(hits, na.rm = T))
   
   p2 <- ggplot(dfs, aes(x = n, y = hits, label = names)) +
     geom_text() + geom_smooth(method = "lm") +

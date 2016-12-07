@@ -1,5 +1,4 @@
 
-# !!critical move to /R to make common with all shiny apps
 get_filtered_dataset_sans_ids <- function(input, dataset) {
   min_year <- input$range_years[1]
   max_year <- input$range_years[2]
@@ -17,7 +16,6 @@ get_filtered_dataset_sans_ids <- function(input, dataset) {
 }
 
 
-# !!critical move to /R to make common with all shiny apps
 get_idfiltered_dataset <- function(query_ids, dataset) {
   filtered_dataset <- subset(dataset$place_subsetted,
                              id %in% query_ids$id)
@@ -28,6 +26,7 @@ get_idfiltered_dataset <- function(query_ids, dataset) {
   return(filtered_dataset_list)
   
 }
+
 
 get_filtered_dataset <- function(filter_list, dataset) {
 
@@ -45,3 +44,4 @@ get_filtered_dataset <- function(filter_list, dataset) {
   }
   return(dataset)
 }
+
