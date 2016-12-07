@@ -10,6 +10,7 @@
 library(shiny)
 library(devtools)
 load_all("../R/bibliographica")
+load_all("../R/estc")
 load_all()
 library(magrittr)
 library(reshape2)
@@ -35,7 +36,7 @@ source("search_api_functions.R")
 source("ecco-api2_functions.R")
 source("paragraph_analysis_functions.R")
 
-dataset <- augment_original_data(readRDS("../inst/examples/data/estc_df.Rds"))
+dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
 fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=heading_TOC&f=contents_titlePage&f=contents_body&f=contents_backmatter"
 

@@ -18,13 +18,3 @@ geobox <- function (region) {
   names(bbox) <- c("left", "bottom", "right", "top")
   bbox
 }
-
-
-
-
-
-
-
-
-
-

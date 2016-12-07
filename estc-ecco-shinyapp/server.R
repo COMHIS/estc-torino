@@ -2,6 +2,7 @@
 library(shiny)
 library(devtools)
 load_all("../R/bibliographica")
+load_all("../R/estc")
 load_all()
 library(magrittr)
 library(reshape2)
@@ -19,7 +20,7 @@ library(stringi)
 
 nchar <- 40
 ntop <- 20
-dataset_from_rds <- readRDS("../inst/examples/data/estc_df.Rds")
+dataset_from_rds <- readRDS("../data/estc_df.Rds")
 theme_set(theme_bw(12))
 
 rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
@@ -27,7 +28,7 @@ terms_conf <- "&d=1&cp=1"
 # fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=metadata_fullTitle&f=heading_TOC&f=contents_titlePage&f=contents_body"
 
 get_idsource_fullpath <- function(idsource) {
-  idsource_fullpath <- paste0("../inst/examples/data/", idsource)
+  idsource_fullpath <- paste0("../data/", idsource)
   return(idsource_fullpath)
 }
 
