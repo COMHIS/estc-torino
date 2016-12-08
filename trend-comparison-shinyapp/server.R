@@ -9,8 +9,8 @@
 
 library(shiny)
 library(devtools)
-load_all("../R/bibliographica")
-load_all("../R/estc")
+load_all("../bibliographica")
+load_all("../estc")
 load_all()
 library(magrittr)
 library(reshape2)

@@ -13,21 +13,31 @@ library(shiny)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  titlePanel("Subcorpus inspector"),
   
   # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
-    ),
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-       plotOutput("distPlot")
-    )
+  # sidebarLayout(
+  #   sidebarPanel(
+  #     textInput("api2_query",
+  #               "ECCO API2 paragraph search query:",
+  #               ""),
+  #     submitButton("Search",
+  #                  icon("refresh")),
+  #     textOutput("helper_text")
+  #   ),
+  #   
+  #   # Show a plot of the generated distribution
+  #   mainPanel(
+  #      dataTableOutput("query_results")
+  #   )
+  # )
+  verticalLayout(
+    textInput("api2_query",
+              "ECCO API2 paragraph search query:",
+              ""),
+    submitButton("Search",
+                 icon("refresh")),
+    textOutput("helper_text"),
+    dataTableOutput("query_results")
   )
 ))

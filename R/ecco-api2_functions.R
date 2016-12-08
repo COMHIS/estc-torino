@@ -41,18 +41,31 @@ format_api2_jsearch_query_results <- function(jsearch_query_results) {
 }
 
 
-get_api2_jsearch_query_results_df <- function(query_url) {
-  # returns df with columns estcid and count
+get_api2_jsearch_query_results_df <- function(query_url, column_names = NA) {
+  # returns df with optional column names
   results <- jsonlite::fromJSON(query_url, flatten = TRUE)$results
   results_df <- data.frame(results)
-  names(results_df) <- c("estcid", "count")
-  results_df$count <- as.numeric(results_df$count)
-  # results_df_summary <- aggregate(results_df$estcid,
-  #                                 by = list(results_df$estcid),
-  #                                 FUN = count)
-  results_df_summary <- plyr::count(results_df, vars = c("estcid"))
+  if (!all(is.na(column_names))) {
+    names(results_df) <- column_names
+  }
+  return(results_df)
+}
+
+get_api2_query_counts <- function(query_results_df) {
+  names(query_results_df) <- c("estcid", "count")
+  query_results_df$count <- as.numeric(query_results_df$count)
+  results_df_summary <- plyr::count(query_results_df, vars = c("estcid"))
   names(results_df_summary) <- c("id", "freq")
   results_df_summary <- format_api2_jsearch_query_results(results_df_summary)
   return(results_df_summary)
 }
+
+
+api2_query_verify_sanity <- function(api2_search_terms) {
+  if (nchar(api2_search_terms) > 6) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
 

@@ -35,7 +35,9 @@ augment_original_data <- function(dataset, time_window = 10) {
   # Add document type
   dataset <- add_document_type(dataset)
   # Set the desired time window (default one decade)
-  dataset <- set_time_window(dataset, time_window)
+  if (!is.na(time_window)) {
+    dataset <- set_time_window(dataset, time_window)
+  }
   return(dataset)
 }
 

@@ -1,8 +1,8 @@
 
 library(shiny)
 library(devtools)
-load_all("../R/bibliographica")
-load_all("../R/estc")
+load_all("../bibliographica")
+load_all("../estc")
 library(magrittr)
 library(reshape2)
 library(gridExtra)
@@ -17,7 +17,6 @@ library(RCurl)
 library(jsonlite)
 library(stringi)
 load_all()
-# print("foo")
 
 nchar <- 40
 ntop <- 20
