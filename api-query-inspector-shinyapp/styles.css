@@ -1,0 +1,26 @@
+
+.shiny-input-container {
+  width: 100% !important; 
+}
+
+#api2_query {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.col-sm-8 {
+  height: 74px;
+  padding-right: 0;
+}
+
+.col-sm-4 {
+  height: 74px;
+  padding-left: 0;
+}
+
+.btn-primary {
+  position: absolute;
+  bottom: 15px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

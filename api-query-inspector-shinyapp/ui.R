@@ -12,8 +12,24 @@ library(shiny)
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   
+  includeCSS("styles.css"),
+  
   # Application title
   titlePanel("Subcorpus inspector"),
+  
+  fluidRow(
+    column(8,
+           textInput("api2_query",
+                     "ECCO API2 paragraph search query:",
+                     "")
+    ),
+    column(4,
+           submitButton("Query API", icon("question"))
+    )
+  ),
+  textOutput("helper_text"),
+  hr(),
+  dataTableOutput("query_results")
   
   # Sidebar with a slider input for number of bins 
   # sidebarLayout(
@@ -31,13 +47,4 @@ shinyUI(fluidPage(
   #      dataTableOutput("query_results")
   #   )
   # )
-  verticalLayout(
-    textInput("api2_query",
-              "ECCO API2 paragraph search query:",
-              ""),
-    submitButton("Search",
-                 icon("refresh")),
-    textOutput("helper_text"),
-    dataTableOutput("query_results")
-  )
 ))
