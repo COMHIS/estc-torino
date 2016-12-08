@@ -21,6 +21,7 @@ shinyServer(function(input, output) {
     if (api2_query_sanity()) {
       query_url <- get_api2_query(term = input$api2_query, api_return_fields = "&field=ESTCID,totalPages")
       query_results_df <- get_api2_jsearch_query_results_df(query_url, column_names = c("id", "pages_ecco", "hits"))
+      query_results_df <- format_api2_jsearch_query_results(query_results_df, format_freq = FALSE)
       print(paste0("query_results_df rows: ", nrow(query_results_df)))
       query_counts <- get_api2_query_counts(query_results_df)
       print(paste0("query_counts length: ", nrow(query_counts)))
