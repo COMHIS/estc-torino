@@ -32,12 +32,13 @@ termset_json_to_dataframe <- function(termset_json) {
   return(resulting_dataframe)
 }
 
-get_search_results <- function(rest_api_url, query_terms, fields) {
+get_search_results <- function(rest_api_url, query_terms, fields, min_freq = "&mf=1") {
   results_url <- paste0(rest_api_url, "search")
   rest_request <- paste0(results_url, "?q=",
                          query_terms,
                          fields,
-                         "&rf=metadata_ESTCID&mf=1")
+                         "&rf=metadata_ESTCID",
+                         min_freq)
   search_results <- read.csv(rest_request, header = TRUE)
   return(search_results)
 }
@@ -94,14 +95,15 @@ validate_json <- function(jsondata) {
 get_rest_query_results <- function(search_term,
                                    rest_api_url,
                                    terms_conf = "&d=1&cp=1",
-                                   fields) {
+                                   fields,
+                                   min_freq = "&mf=1") {
   terms_json <- get_rest_api_terms(rest_api_url, search_term, terms_conf, fields)
   if (validate_json(terms_json) == FALSE) {
     return(NULL) 
   } else {
     terms_df <- termset_json_to_dataframe(terms_json)
     terms_top50 <- get_query_terms(terms_df)
-    query_results <- get_search_results(rest_api_url, terms_top50, fields)
+    query_results <- get_search_results(rest_api_url, terms_top50, fields, min_freq)
     return(query_results)
   }
 }
@@ -118,12 +120,14 @@ enrich_rest_query_results <- function(rest_query_results) {
   return(formatted_ids)
 }
 
-get_query_ids_from_api <- function(input, rest_api_url, terms_conf, fields) {
+get_query_ids_from_api <- function(input, rest_api_url, terms_conf, fields, min_freq = 1) {
   search_term <- tolower(as.character(input$search_term))
+  mf <- paste0("&mf=", min_freq)
   query_results <- get_rest_query_results(search_term,
                                           rest_api_url,
                                           terms_conf,
-                                          fields)
+                                          fields,
+                                          mf)
   if (is.null(query_results)) {
     return(NULL)
   }

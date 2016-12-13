@@ -29,10 +29,10 @@ get_api2_query_set <- function(base_term, comparable_terms) {
 
 
 format_api2_jsearch_query_results <- function(jsearch_query_results, format_freq = TRUE) {
-  jsearch_query_results$id <- gsub("\\,$", "", as.character(jsearch_query_results$id))
-  if(format_freq) {
+  if (format_freq) {
     jsearch_query_results$freq <- as.numeric(jsearch_query_results$freq)
   }
+  jsearch_query_results$id <- gsub("\\,$", "", as.character(jsearch_query_results$id))
   # Takes first character of id, removes zeroes from start of numeric part,
   # adds first char back again.
   jsearch_query_results$id <- apply(cbind(substr(jsearch_query_results$id, 1, 1),

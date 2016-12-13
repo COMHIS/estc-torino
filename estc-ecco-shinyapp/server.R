@@ -17,6 +17,7 @@ library(RCurl)
 library(jsonlite)
 library(stringi)
 load_all()
+source("./get_ids_with_filter.R")
 
 nchar <- 40
 ntop <- 20
@@ -43,13 +44,19 @@ shinyServer(function(input, output) {
   time_window_numeric <- reactive({
     as.numeric(input$time_window)
   })
-  
+
+  get_dataset_augmented <- eventReactive(input$submit_button, {
+    dataset_augmented <- augment_original_data(dataset_from_rds,
+                                               time_window_numeric())
+    if (input$subcorpus == "") {
+      return(dataset_augmented)
+    } else {
+      dataset_augmented <- get_data_subset_ids_csv(dataset_augmented, input$subcorpus)
+      return(dataset_augmented)
+    }
     
-  get_dataset_augmented <- reactive({
-    augment_original_data(dataset_from_rds,
-                          time_window_numeric())
   })
-  
+
   sanity <- reactive({
     sanitized_term <- sanitize_term(input$search_term)
     sanity <- sanity_check_term_query(sanitized_term)
@@ -63,14 +70,13 @@ shinyServer(function(input, output) {
     }
   })
 
-  query_ids <- reactive({
-    # idsource <- get_idsource_fullpath(input$idsource)
-    # format_query_ids(idsource)
+  query_ids <- eventReactive(input$submit_button, {
     if (sanity()) {
       removeNotification(id = "query_null")
       withProgress(message = 'Querying API...', value = 0.5, {
-        selected_fields = get_api_fields_from_input(input$search_fields)
-        get_query_ids_from_api(input, rest_api_url, terms_conf, selected_fields)
+        selected_fields <- get_api_fields_from_input(input$search_fields)
+        min_freq <- input$api_min_hits
+        get_query_ids_from_api(input, rest_api_url, terms_conf, selected_fields, min_freq)
       })
     }
   })
@@ -130,6 +136,17 @@ shinyServer(function(input, output) {
       close(log_file)
     }
   })
+  
+  observeEvent(input$save_button, {
+    # print("Save button clicked!")
+    ids_label <- input$ids_identifier
+    query_res_df <- get_idfiltered_dataset(query_ids(), filtered_dataset_sans_ids())$place_filtered
+    query_res_ids <- query_res_df$id
+    query_res_ids_df <- data.frame(id = query_res_ids)
+    filename <- paste0("../data/saved_query_ids/", ids_label, ".csv")
+    write.csv(query_res_ids_df, file = filename)
+    showNotification(paste0("Query saved with identifier: ", ids_label), duration = 10, type = "message")
+  })
 
   # summary tab outputs
 
@@ -158,7 +175,7 @@ shinyServer(function(input, output) {
                              "Time segment" = input$time_window,
                              "Document type" = input$document_type,
                              "ECCO API query hits" = api_query_hits,
-                             "Query hits in complete ESTC" =
+                             "hit IDs in ESTC or subcorpus" =
                                output_query_hits_in_data_original,
                              "Hits_final" =
                                output_query_hits_in_data_subset
@@ -167,7 +184,7 @@ shinyServer(function(input, output) {
         # fix dots etc in rownames that resulting from conversion into dataframe:
         rownames(summary_table) <- gsub("\\."," ",rownames(summary_table))
         rownames(summary_table)[rownames(summary_table) == "Hits_final"] <- 
-          "Hits after filtering for year, place, etc."
+          "Hit IDs after filtering for year, place, etc."
         return(summary_table)
       })
     }

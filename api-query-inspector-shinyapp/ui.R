@@ -24,27 +24,16 @@ shinyUI(fluidPage(
                      "")
     ),
     column(4,
-           submitButton("Query API", icon("question"))
+           # submitButton("Query API", icon("question"))
+           actionButton(inputId = "api_button", 
+                        label = "Query API", 
+                        icon = icon("question"))
     )
   ),
   textOutput("helper_text"),
   hr(),
-  dataTableOutput("query_results")
+  dataTableOutput("query_results"),
+  textInput(inputId = "ids_identifier", "Save with name:", placeholder = "write this down somewhere!"),
+  actionButton("save_button", "Save IDs")
   
-  # Sidebar with a slider input for number of bins 
-  # sidebarLayout(
-  #   sidebarPanel(
-  #     textInput("api2_query",
-  #               "ECCO API2 paragraph search query:",
-  #               ""),
-  #     submitButton("Search",
-  #                  icon("refresh")),
-  #     textOutput("helper_text")
-  #   ),
-  #   
-  #   # Show a plot of the generated distribution
-  #   mainPanel(
-  #      dataTableOutput("query_results")
-  #   )
-  # )
 ))

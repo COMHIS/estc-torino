@@ -17,14 +17,8 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      # selectInput("idsource",
-      #             "Queryfile:",
-      #             choices = list("equality.csv",
-      #                            "liberty.csv",
-      #                            "rebellion.csv",
-      #                            "revolution.csv",
-      #                            "ungodly.csv"),
-      #             selected = "equality.csv"),
+      textInput(inputId = "subcorpus", label = "Subcorpus:",
+                placeholder = "leave blank for whole ECCO"),
       textInput("search_term",
                 "Search string:",
                 ""),
@@ -36,6 +30,11 @@ shinyUI(fluidPage(
                                  "Backmatter" = "contents_headings_backmatter"),
                   selected = "contents_headings_all"
                    ),
+      sliderInput("api_min_hits",
+                  "Min API hits:",
+                  min = 1,
+                  max = 50,
+                  value = 1),
       # 0. pelkkä contents:titlepage
       # 1. Contents + headings kaikki
       # 2. Contents +headings (frontmatter)
@@ -84,8 +83,11 @@ shinyUI(fluidPage(
                                  "Books",
                                  "Pamphlets"),
                   selected = "All"),
-      submitButton("Update View",
-                   icon("refresh"))
+      # submitButton("Update View",
+      #              icon("refresh"))
+      actionButton(inputId = "submit_button", 
+                   label = "Update View",
+                   icon = icon("refresh"))
     ),
     
     
@@ -97,7 +99,11 @@ shinyUI(fluidPage(
                  h3("Search summary",
                     class = "text-center"),
                  tableOutput("summary_table"),
-                 textOutput("intro_text")
+                 textOutput("intro_text"),
+                 textInput(inputId = "ids_identifier", label = "", placeholder = "input idfile name"),
+                 actionButton(inputId = "save_button", 
+                              label = "Save subcorpus",
+                              icon = icon("refresh"))
                  # for styling: <div> id = summary_table
                  ),
         tabPanel("Books/Pamphlets",
