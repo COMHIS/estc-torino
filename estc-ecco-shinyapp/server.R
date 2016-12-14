@@ -175,7 +175,7 @@ shinyServer(function(input, output) {
                              "Time segment" = input$time_window,
                              "Document type" = input$document_type,
                              "ECCO API query hits" = api_query_hits,
-                             "hit IDs in ESTC or subcorpus" =
+                             "Unique hit IDs in ESTC or subcorpus" =
                                output_query_hits_in_data_original,
                              "Hits_final" =
                                output_query_hits_in_data_subset
@@ -184,7 +184,7 @@ shinyServer(function(input, output) {
         # fix dots etc in rownames that resulting from conversion into dataframe:
         rownames(summary_table) <- gsub("\\."," ",rownames(summary_table))
         rownames(summary_table)[rownames(summary_table) == "Hits_final"] <- 
-          "Hit IDs after filtering for year, place, etc."
+          "Unique hit IDs after filtering for year, place, etc."
         return(summary_table)
       })
     }

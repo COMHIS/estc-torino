@@ -25,7 +25,9 @@ add_normalization_field <- function(query_ids) {
 get_query_hits_amount <- function(query_ids, data) {
   # Number and percentage of the custom list IDs that were found
   # in the very original data
-  hitn0 <- sum(query_ids$id %in% data$id, na.rm = TRUE)
+  # hitn0 <- sum(query_ids$id %in% data$id, na.rm = TRUE)
+  hitn0 <- data[data$id %in% query_ids$id, ]
+  hitn0 <- nrow(hitn0)
   hitp0 <- 100 * hitn0 / nrow(query_ids)
   query_hits_amount <- list(hits_amount = hitn0, percentile = hitp0)
   return(query_hits_amount)
