@@ -71,3 +71,19 @@ api2_query_verify_sanity <- function(api2_search_terms) {
 }
 
 
+format_api2_ids <- function(df_with_ids, id_field = "id") {
+  if (id_field != "id") {
+    df_with_ids$id <- df_with_ids[, id_field]
+  }
+  df_with_ids
+  
+  df_with_ids$id <- gsub("\\,$", "", as.character(df_with_ids$id))
+  # Takes first character of id, removes zeroes from start of numeric part,
+  # adds first char back again.
+  df_with_ids$id <- apply(cbind(substr(df_with_ids$id, 1, 1),
+                                          gsub("^[A-Z]0*", "", df_with_ids$id)),
+                                    1, function(x) {paste(x, collapse = "")})
+  formatted_ids <- df_with_ids
+  return(formatted_ids)
+}
+
