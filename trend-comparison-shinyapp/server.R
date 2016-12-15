@@ -27,13 +27,10 @@ library(jsonlite)
 library(stringi)
 library(plyr) # this might be a problem
 
-# source("dataset_processing_functions.R")
 source("query_ids_functions.R")
 source("query_summary_functions.R")
 source("get_query_set_list.R")
 source("plot_functions.R")
-# source("search_api_functions.R")
-# source("ecco-api2_functions.R")
 source("paragraph_analysis_functions.R")
 
 dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))
@@ -116,19 +113,12 @@ shinyServer(function(input, output) {
     query_sets_list <- comparable_sets_list()
     # print(query_sets_list)
     title <- paste0(input$baseline_term, " --- timeline for co-terms in ", input$mode)
-    plot <- plot_titlecount_relative(title = title, query_sets_list)
+    plot <- plot_titlecount_relative(title = title,
+                                     query_sets_list,
+                                     style = input$graph_geom,
+                                     plot_colour = "Paired")
     return(plot)
   })
-  
-  # output$freq_plot_download <- downloadHandler(
-  #   filename = function() {
-  #     paste0(input$baseline_term, "-co-term-timeline-",Sys.Date(), ".png")
-  #   },
-  #   content = function(con){
-  #     
-  #   }
-  # )
-  # output$paragraph_plot <- renderPlot({
-  #   
-  # })
+
 })
+

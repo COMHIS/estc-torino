@@ -21,6 +21,9 @@ shinyUI(fluidPage(
       radioButtons("mode", label = NULL,
                    choices = list("books", "paragraphs"),
                    selected = "books"),
+      radioButtons("graph_geom", label = "Graph style:",
+                   choices = list("smooth", "stacked"),
+                   selected = "smooth"),
       textInput("baseline_term",
                 "Baseline term:",
                 "politeness"),
@@ -60,7 +63,10 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       plotOutput("freq_plot")
+       plotOutput("freq_plot"),
+       plotOutput("freq_plot2"),
+       plotOutput("freq_plot3"),
+       plotOutput("freq_plot4")
     )
   )
 ))
