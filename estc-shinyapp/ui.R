@@ -12,7 +12,7 @@ shinyUI(fluidPage(
   # tags$head(tags$link(rel = "icon", type = "image/png", href = "www/favicon48.png")),
   includeCSS("styles.css"),  
   # Application title
-  titlePanel("ESTC Report"),
+  titlePanel("ESTC Report v0.2"),
   
   # Sidebar with a slider input for number of bins
   sidebarLayout(
@@ -21,7 +21,8 @@ shinyUI(fluidPage(
                 placeholder = "leave blank for whole DB"),
       textInput("search_term",
                 "Search string:",
-                ""),
+                "",
+                placeholder = "leave blank for no filtering"),
       checkboxInput("case_sensitive", "Case sensitive?"),
       selectInput("search_fields", "Search fields:",
                   choices = list("Title" = "title",

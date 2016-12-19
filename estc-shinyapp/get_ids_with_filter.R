@@ -2,6 +2,10 @@
 
 get_data_subset_with_filter <- function(dataset, filter_value, filter_field, case_sensitive = TRUE) {
   # filtered_data <- dataset[which(dataset[, filter_field] == filter_value), ]
+  if (filter_value == "") {
+    return(dataset)
+  }
+  
   if (case_sensitive) {
     filtered_data <- dataset[which(grepl(filter_value, dataset[, filter_field])), ]
   } else {
