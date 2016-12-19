@@ -65,11 +65,11 @@ shinyServer(function(input, output) {
     comparables <- input_comparables()
     print(input$mode)
     print(typeof(input$mode))
-    print(input$mode == "books")
-    if (input$mode == "books") {
+    print(input$mode == "API1")
+    if (input$mode == "API1") {
       api_query_set <- get_api_query_set(input$baseline_term, comparables)
     } else {
-      api_query_set <- get_api2_query_set(input$baseline_term, comparables)
+      api_query_set <- get_api2_query_set(input$baseline_term, comparables, input$mode)
     }
     return(api_query_set)
     
@@ -77,7 +77,7 @@ shinyServer(function(input, output) {
   
 
   baseline_yearly_pubs <- reactive({
-    if (input$mode == "books") {
+    if (input$mode == "API1") {
       query_set <- api_query_set()$base_query
       baseline_yearly <-
         get_pubs_yearly_for_query(query_set$query, dataset)
@@ -86,7 +86,7 @@ shinyServer(function(input, output) {
   })
   
   comparable_sets_list <- reactive({
-    if (input$mode == "books") {
+    if (input$mode == "API1") {
       baseline_yearly = baseline_yearly_pubs()
       comparables_api_queries <- api_query_set()$comparable_queries
       comparable_sets_list <- vector("list", length(comparables_api_queries))
