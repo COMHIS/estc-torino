@@ -13,12 +13,18 @@ get_api2_query <- function(term = "religion",
 
 
 get_api2_query_set <- function(base_term, comparable_terms, query_level) {
-  base_set <- list(term = base_term, query = get_api2_query(term = base_term, level = query_level))
+  if (base_term == "") {
+    base_set <- list(term = "", query = NA)
+    base_q <- ""
+  } else {
+    base_set <- list(term = base_term, query = get_api2_query(term = base_term, level = query_level))
+    base_q <- paste0("+", base_term)
+  }
   
   comparable_query_sets <-  vector("list", length(comparable_terms))
   i <- 1
   for (comparable_term in comparable_terms) {
-    query_term <- paste0("+", base_term, " +(", comparable_term, ")")
+    query_term <- paste0(base_q, " +(", comparable_term, ")")
     comparable_set <-
       list(term = comparable_term, query = get_api2_query(term = query_term, level = query_level))
     comparable_query_sets[[i]] <- comparable_set

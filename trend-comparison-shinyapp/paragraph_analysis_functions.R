@@ -43,12 +43,29 @@ get_hits_yearly_for_api_query <- function(api_query, dataset) {
 }
 
 
+get_total_ecco_titles_yearly <- function(dataset, years = list(1705, 1799)) {
+  year_list <- years[[1]]:years[[2]]
+  subset_ids <- readRDS(paste0("../data/", "ecco_dump_ids", ".Rds"))
+  data_subset <- dataset[dataset$id %in% subset_ids$id, ]
+  yearly_titles <- plyr::count(data_subset, 'publication_year')
+  yearly_title_results <- data.frame(year = year_list)
+  yearly_title_results$titles <-
+    yearly_titles[match(yearly_title_results$year, yearly_titles$publication_year), "freq"]
+  names(yearly_title_results) <- c("year", "hits")
+  return(yearly_title_results)
+}
+
+
 get_yearly_paragraph_frequencies_list <- function(paragraph_query_set, dataset) {
   
   base_set <- paragraph_query_set$base_query_set
   print("querying api for base term")
-  base_query_hits_yearly <- get_hits_yearly_for_api_query(base_set$query, dataset)
-
+  if (base_set$term == "") {
+    base_query_hits_yearly <- readRDS("./ecco_titles_yearly.Rds")
+  } else {
+    base_query_hits_yearly <- get_hits_yearly_for_api_query(base_set$query, dataset)
+  }
+  
   comparable_sets <- paragraph_query_set$comparable_query_sets
   comparable_results <- vector("list", length(comparable_sets))
     

@@ -40,7 +40,6 @@ fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_bac
 shinyServer(function(input, output) {
 
   # reactives
-
   input_comparables <- reactive({
     comparables_list <- list(input$comparative_term1,
                              input$comparative_term2,
@@ -60,58 +59,26 @@ shinyServer(function(input, output) {
     }
     return(return_list)
   })
-  
+
   api_query_set <- reactive({
     comparables <- input_comparables()
     print(input$mode)
     print(typeof(input$mode))
-    print(input$mode == "API1")
-    if (input$mode == "API1") {
-      api_query_set <- get_api_query_set(input$baseline_term, comparables)
-    } else {
-      api_query_set <- get_api2_query_set(input$baseline_term, comparables, input$mode)
-    }
+    api_query_set <- get_api2_query_set(input$baseline_term, comparables, input$mode)
     return(api_query_set)
     
   })
-  
 
-  baseline_yearly_pubs <- reactive({
-    if (input$mode == "API1") {
-      query_set <- api_query_set()$base_query
-      baseline_yearly <-
-        get_pubs_yearly_for_query(query_set$query, dataset)
-      return(baseline_yearly)
-    }
-  })
-  
   comparable_sets_list <- reactive({
-    if (input$mode == "API1") {
-      baseline_yearly = baseline_yearly_pubs()
-      comparables_api_queries <- api_query_set()$comparable_queries
-      comparable_sets_list <- vector("list", length(comparables_api_queries))
-      i <- 1
-      for (comparable_api_query_set in comparables_api_queries) {
-        relative_hits_yearly <- get_relative_hits_yearly_for_query(
-          comparable_api_query_set$query,
-          baseline_yearly, dataset)
-        query_term <- comparable_api_query_set$term
-        query_set <- list(term = query_term,
-                          data = relative_hits_yearly)
-        comparable_sets_list[[i]] <- query_set
-        i <- i + 1
-      }
-    } else {
-      paragraph_query_set <- api_query_set()
-      comparable_sets_list <- 
-        get_yearly_paragraph_frequencies_list(paragraph_query_set, dataset)
-    }
+    paragraph_query_set <- api_query_set()
+    comparable_sets_list <- 
+      get_yearly_paragraph_frequencies_list(paragraph_query_set, dataset)
     return(comparable_sets_list)
   })
 
+  
   output$freq_plot <- renderPlot({
     query_sets_list <- comparable_sets_list()
-    # print(query_sets_list)
     title <- paste0(input$baseline_term, " --- timeline for co-terms in ", input$mode)
     plot <- plot_titlecount_relative(title = title,
                                      query_sets_list,

@@ -1,7 +1,5 @@
 
 library(shiny)
-library(ggplot2)
-library(plotly)
 library(jsonlite)
 library(devtools)
 load_all("../bibliographica")
