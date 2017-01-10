@@ -56,12 +56,33 @@ get_total_ecco_titles_yearly <- function(dataset, years = list(1705, 1799)) {
 }
 
 
-get_yearly_paragraph_frequencies_list <- function(paragraph_query_set, dataset) {
+get_total_summary_yearly <- function(input_json, total_count = "totalParagraphs", years = list(1705, 1799)) {
+  # totalTitles totalParagraphs documentLength
+  json_data <- jsonlite::fromJSON(input_json)
+  json_data$publication_year <- as.integer(substr(json_data$pubDateStart, 1, 4))
+  json_data <- subset(json_data, publication_year >= years[1] & publication_year <= years[2])
+  if (total_count == "totalTitles") {
+    yearly_variable_summary <- plyr::count(json_data, 'publication_year')
+  } else {
+  yearly_variable_summary <- aggregate(json_data[, total_count],
+                                   by = list(json_data$publication_year),
+                                   FUN = sum)
+  }
+  names(yearly_variable_summary) <- c("year", "hits")
+  return(yearly_variable_summary)
+}
+
+
+get_yearly_paragraph_frequencies_list <- function(blank_total, paragraph_query_set, dataset) {
   
   base_set <- paragraph_query_set$base_query_set
   print("querying api for base term")
   if (base_set$term == "") {
-    base_query_hits_yearly <- readRDS("./ecco_titles_yearly.Rds")
+    # base_query_hits_yearly <- readRDS("./ecco_titles_yearly.Rds")
+    base_query_hits_yearly <- switch(blank_total,
+                                     titles = readRDS("./ecco_total_titles.Rds"),
+                                     paragraphs = readRDS("./ecco_total_paragraphs.Rds"),
+                                     words = readRDS("./ecco_total_tokens.Rds"))
   } else {
     base_query_hits_yearly <- get_hits_yearly_for_api_query(base_set$query, dataset)
   }

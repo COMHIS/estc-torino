@@ -72,7 +72,7 @@ shinyServer(function(input, output) {
   comparable_sets_list <- reactive({
     paragraph_query_set <- api_query_set()
     comparable_sets_list <- 
-      get_yearly_paragraph_frequencies_list(paragraph_query_set, dataset)
+      get_yearly_paragraph_frequencies_list(input$blank_total, paragraph_query_set, dataset)
     return(comparable_sets_list)
   })
 
