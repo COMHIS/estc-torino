@@ -63,24 +63,32 @@ get_total_summary_yearly <- function(input_json, total_count = "totalParagraphs"
   json_data <- subset(json_data, publication_year >= years[1] & publication_year <= years[2])
   if (total_count == "totalTitles") {
     yearly_variable_summary <- plyr::count(json_data, 'publication_year')
+    # should take in account number of unique estcid or not?
+    # uniikki <- unique(json_data$ESTCID)
+    # subbed <- gsub("([A-Z]{1})0*", "\\1", uniikki)
   } else {
   yearly_variable_summary <- aggregate(json_data[, total_count],
-                                   by = list(json_data$publication_year),
-                                   FUN = sum)
+                                       by = list(json_data$publication_year),
+                                       FUN = sum)
   }
   names(yearly_variable_summary) <- c("year", "hits")
   return(yearly_variable_summary)
 }
 
 
-get_yearly_paragraph_frequencies_list <- function(blank_total, paragraph_query_set, dataset) {
+get_yearly_paragraph_frequencies_list <- function(blank_total,
+                                                  paragraph_query_set,
+                                                  dataset,
+                                                  subcorpus_filter = FALSE) {
   
   base_set <- paragraph_query_set$base_query_set
   print("querying api for base term")
-  if (base_set$term == "") {
+  if (base_set$term == "" && subcorpus_filter == TRUE) {
+    base_query_hits_yearly <- get_total_ecco_titles_yearly(dataset, years = list(1705, 1799))
+  } else if (base_set$term == "") {
     # base_query_hits_yearly <- readRDS("./ecco_titles_yearly.Rds")
     base_query_hits_yearly <- switch(blank_total,
-                                     titles = readRDS("./ecco_total_titles.Rds"),
+                                     titles = readRDS("./ecco_titles_yearly.Rds"),
                                      paragraphs = readRDS("./ecco_total_paragraphs.Rds"),
                                      words = readRDS("./ecco_total_tokens.Rds"))
   } else {
@@ -105,4 +113,3 @@ get_yearly_paragraph_frequencies_list <- function(blank_total, paragraph_query_s
   }
   return(comparable_results)
 }
-

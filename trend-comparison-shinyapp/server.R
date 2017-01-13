@@ -1,11 +1,3 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
 library(devtools)
@@ -33,13 +25,30 @@ source("get_query_set_list.R")
 source("plot_functions.R")
 source("paragraph_analysis_functions.R")
 
-dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))
-rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
-fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=heading_TOC&f=contents_titlePage&f=contents_body&f=contents_backmatter"
+# dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))
+# rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
+# fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=heading_TOC&f=contents_titlePage&f=contents_body&f=contents_backmatter"
 
 shinyServer(function(input, output) {
 
   # reactives
+
+  subcorpus_filter_state <- reactive({
+    if (input$subcorpus != "") {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
+  })
+    
+  dataset <- reactive({
+    base_dataset <- augment_original_data(readRDS("../data/estc_df.Rds"))
+    if (subcorpus_filter_state()) {
+      base_dataset <- get_data_subset_ids_csv(base_dataset, input$subcorpus)
+    }
+    return(base_dataset)
+  })
+  
   input_comparables <- reactive({
     comparables_list <- list(input$comparative_term1,
                              input$comparative_term2,
@@ -71,8 +80,10 @@ shinyServer(function(input, output) {
 
   comparable_sets_list <- reactive({
     paragraph_query_set <- api_query_set()
+    dataset <- dataset()
     comparable_sets_list <- 
-      get_yearly_paragraph_frequencies_list(input$blank_total, paragraph_query_set, dataset)
+      get_yearly_paragraph_frequencies_list(input$blank_total, paragraph_query_set, dataset, 
+                                            subcorpus_filter_state())
     return(comparable_sets_list)
   })
 
@@ -85,6 +96,19 @@ shinyServer(function(input, output) {
                                      style = input$graph_geom,
                                      plot_colour = "Paired")
     return(plot)
+  })
+  
+  
+  output$subcorpus_explainer <- renderText({
+    if (subcorpus_filter_state()) {
+      explainer_text <- "With a subcorpus, when no comparative term is provided, the search results are compared 
+                         against the yearly total titlecount of the subcorpus. Therefore on a given year: Frequency = (paragraphs in
+                         subcorpus with search term) / (number of subcorpus titles). i.e. Average yearly number of paragraphs with the
+                         term in books of the subcorpus."
+    } else {
+      explainer_text <- ""
+    }
+    return(explainer_text)
   })
 
 })

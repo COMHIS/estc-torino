@@ -12,7 +12,7 @@ shinyUI(fluidPage(
   # tags$head(tags$link(rel = "icon", type = "image/png", href = "www/favicon48.png")),
   includeCSS("styles.css"),  
   # Application title
-  titlePanel("ECCO Explorer"),
+  titlePanel("ECCO Explorer v0.1"),
   
   # Sidebar with a slider input for number of bins
   sidebarLayout(

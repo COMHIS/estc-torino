@@ -13,18 +13,22 @@ library(shiny)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Not Google n-gram viewer v0.5"),
+  titlePanel("Not Google n-gram viewer v0.7"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
+      textInput("subcorpus",
+                "Subcorpus:",
+                "",
+                placeholder = "leave blank for no subcorpus"),
       radioButtons("mode", label = NULL,
                    choices = list("paragraph", "document"),
                    selected = "paragraph"),
       radioButtons("graph_geom", label = "Graph style:",
-                   choices = list("smooth", "stacked"),
+                   choices = list("smooth", "very_smooth", "stacked"),
                    selected = "smooth"),
-      radioButtons("blank_total", label = "Total to use for whole ECCO",
+      radioButtons("blank_total", label = "Total to use for whole ECCO with no subcorpus",
                    choices = list("titles", "paragraphs", "words"),
                    selected = "titles"),
       textInput("baseline_term",
@@ -67,10 +71,8 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       plotOutput("freq_plot"),
-       plotOutput("freq_plot2"),
-       plotOutput("freq_plot3"),
-       plotOutput("freq_plot4")
+       plotOutput("freq_plot", height = "700px"),
+       textOutput("subcorpus_explainer")
     )
   )
 ))

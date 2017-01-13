@@ -24,15 +24,15 @@ plot_titlecount_relative <- function(title = "placeholder",
 
   if (style == "smooth") {
     geom <- geom_smooth(method = "loess", span = 0.2, se = FALSE)
+  } else if (style == "very_smooth") {
+    geom <- stat_smooth(method = 'lm',  formula = y ~ poly(x,2), se = FALSE)
   } else {
     graphdata_df$value[is.na(graphdata_df$value)] <- 0
     geom <- geom_ribbon(aes(ymin=0, ymax=value, fill = variable, colour = NA), position = "stack")
-  } # HACK
+  }
 
   plot <- ggplot(data = graphdata_df,
                  aes(x = year, y = value, colour = variable)) + 
-    # geom_smooth(method = "loess", span = 0.2, se = FALSE) +
-    # geom_ribbon(aes(ymin=0, ymax=value, fill = variable), position = "stack") +
     geom +
     labs(title = title,
          x = "Year",
@@ -40,6 +40,8 @@ plot_titlecount_relative <- function(title = "placeholder",
          colour = "Search term") +
     scale_x_continuous(breaks = 
       round(seq(min(graphdata_df$year), max(graphdata_df$year + 4), 5), 1)) +
+    scale_y_continuous(limits = c(min(graphdata_df$value, na.rm = TRUE),
+                                  max(graphdata_df$value, na.rm = TRUE))) + 
     theme_linedraw() +
     theme(axis.text.x = element_text(size = 9, angle = -90),
           axis.title.x = element_blank(),
@@ -47,5 +49,8 @@ plot_titlecount_relative <- function(title = "placeholder",
           legend.position = "bottom") +
     scale_colour_brewer(type = "qual", palette = plot_colour) +
     scale_fill_brewer(type = "qual", palette = plot_colour)
+  if (style == "very_smooth") {
+    plot <- plot + geom_point()
+  }
   return(plot)
 }
