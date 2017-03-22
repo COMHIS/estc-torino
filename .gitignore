@@ -29,5 +29,6 @@ estc-ecco-shinyapp/data
 data
 bibliographica
 estc
+estc_enriched.Rds
 
 trend-comparison-shinyapp/testdata
