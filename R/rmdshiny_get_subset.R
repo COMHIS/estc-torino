@@ -1,44 +1,49 @@
 
 
-get_subset <- function(df.orig,
-                       min.year,
-                       max.year,
+get_subset <- function(dataset_to_filter,
+                       min_year,
+                       max_year,
                        selected_language,
                        selected_document_type,
-                       selected.place) {
+                       selected_location) {
 
-  df.preprocessed <- df.orig
+  return_dataset <- dataset_to_filter
   
   # Selected time window
-  df.preprocessed <- df.preprocessed %>% filter(publication_year >= min.year &
-                                                  publication_year <= max.year)
-  
+  return_dataset <- subset(return_dataset,
+                           publication_year >= min_year &
+                             publication_year <= max_year)
+
   # Selected language
   if (!selected_language == "any") {
-    df.preprocessed <- df.preprocessed %>% filter(language %in% selected_language)
+    return_dataset <- subset(return_dataset,
+                             language %in% selected_language)
   }
   
   # Selected document type
   if (!selected_document_type == "All") {  
-    df.preprocessed <- df.preprocessed %>% filter(document_type %in% selected_document_type)
+    return_dataset <- subset(return_dataset,
+                             document_type %in% selected_document_type)
     
     # Remove issues if Pamphlets are selected
     if (selected_document_type == "Pamphlets") {
-      df.preprocessed <- df.preprocessed %>% filter(!issue)
+      return_dataset <- subset(return_dataset,
+                               issue == TRUE)
     }
     
   } 
   
   # Selected place
-  df.preprocessed.allplaces <- df.preprocessed
-  if (!selected.place == "All") {
+  return_dataset_all_locations <- return_dataset
+  if (!selected_location == "All") {
     # Keep version with all places
     # Make version with selected place
-    df.preprocessed <- df.preprocessed %>% filter(publication_place %in% selected.place)
+    return_dataset <- subset(return_dataset,
+                             publication_place %in% selected_location)
   }
   
-  returnlist <- list(place_subsetted = df.preprocessed,
-                     all_places = df.preprocessed.allplaces)
+  returnlist <- list(place_subsetted = return_dataset,
+                     all_places = return_dataset_all_locations)
   
   return(returnlist)
 }

@@ -39,9 +39,9 @@ get_filtered_dataset <- function(filter_list, dataset) {
   if ("publication_year" %in% names(filter_list)) {
     min_year <- filter_list$publication_year[1]
     max_year <- filter_list$publication_year[2]
-    dataset <- dataset %>% filter(publication_year >= min_year &
-                                  publication_year <= max_year)
+    dataset <- subset(dataset,
+                      publication_year >= min_year &
+                        publication_year <= max_year)
   }
   return(dataset)
 }
-

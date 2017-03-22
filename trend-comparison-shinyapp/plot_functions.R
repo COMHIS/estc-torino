@@ -26,9 +26,12 @@ plot_titlecount_relative <- function(title = "placeholder",
     geom <- geom_smooth(method = "loess", span = 0.2, se = FALSE)
   } else if (style == "very_smooth") {
     geom <- stat_smooth(method = 'lm',  formula = y ~ poly(x,2), se = FALSE)
+  } else if (style == "not_smooth") {
+    geom <- geom_line(size = 2)
   } else {
     graphdata_df$value[is.na(graphdata_df$value)] <- 0
     geom <- geom_ribbon(aes(ymin=0, ymax=value, fill = variable, colour = NA), position = "stack")
+    # geom <- geom_density(aes(ymin=0, ymax=value, fill = variable, colour = NA), position = "stack")
   }
 
   plot <- ggplot(data = graphdata_df,

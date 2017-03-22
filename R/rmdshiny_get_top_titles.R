@@ -1,16 +1,21 @@
 
-get_total_titlehits <- function(df0, custom.ids, field = "title", nchar = 40) {
-  df <- df0
-  # v seems to have no use -vv
-  v <- 10 ^ (1:max(na.omit(round(log10(max(table(df$title)))))))
+library(dplyr)
+
+get_total_titlehits <- function(id_filtered_dataset,
+                                query_ids,
+                                field = "title",
+                                nchar = 40) {
+  df <- id_filtered_dataset
   # Use unnormalized frequency for now
   # field <- "title"
-  df$hits <-  unlist(custom.ids[match(df$id, custom.ids$id), "freq"], use.names = F)
+  # !!!number of editions seems to be counted by matching book titles and is
+  # therefore a very rough approximation
+  df$hits <-  unlist(query_ids[match(df$id, query_ids$id), "freq"], use.names = FALSE)
   df$names <- df[[field]]
   dfs.total <- df %>% group_by(names) %>%
     filter(!is.na(names)) %>% 
     dplyr::summarise(n = n(), # number of editions
-              count = sum(hits, na.rm = T)) %>% # number of hits
+              count = sum(hits, na.rm = TRUE)) %>% # number of hits
     mutate(hits.per.edition = count/n)
   # Limit title length
   dfs.total$names <- substr(as.character(dfs.total$names), 1, nchar)

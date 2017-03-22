@@ -13,7 +13,7 @@ library(shiny)
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Not Google n-gram viewer v0.7"),
+  titlePanel("Not Google n-gram viewer v0.8"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
@@ -26,7 +26,7 @@ shinyUI(fluidPage(
                    choices = list("paragraph", "document"),
                    selected = "paragraph"),
       radioButtons("graph_geom", label = "Graph style:",
-                   choices = list("smooth", "very_smooth", "stacked"),
+                   choices = list("smooth", "very_smooth", "not_smooth", "stacked"),
                    selected = "smooth"),
       radioButtons("blank_total", label = "Total to use for whole ECCO with no subcorpus",
                    choices = list("titles", "paragraphs", "words"),

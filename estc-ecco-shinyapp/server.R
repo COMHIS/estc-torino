@@ -17,16 +17,15 @@ library(RCurl)
 library(jsonlite)
 library(stringi)
 load_all()
-source("./get_ids_with_filter.R")
+# source("./get_ids_with_filter.R")
 
 nchar <- 40
 ntop <- 20
 dataset_from_rds <- readRDS("../data/estc_df.Rds")
 theme_set(theme_bw(12))
 
-rest_api_url <- "https://vm0175.kaj.pouta.csc.fi/ecco-search/"
-terms_conf <- "&d=1&cp=1"
-# fields <- "&f=heading_index&f=heading_frontmatter&f=contents_index&f=heading_backmatter&f=heading_body&f=contents_frontmatter&f=contents_TOC&f=metadata_fullTitle&f=heading_TOC&f=contents_titlePage&f=contents_body"
+rest_api_url <- "http://vm0542.kaj.pouta.csc.fi/"
+terms_conf <- "&minCommonPrefix=1&maxEditDistance=1"
 
 get_idsource_fullpath <- function(idsource) {
   idsource_fullpath <- paste0("../data/", idsource)
@@ -45,6 +44,7 @@ shinyServer(function(input, output) {
     as.numeric(input$time_window)
   })
 
+  
   get_dataset_augmented <- eventReactive(input$submit_button, {
     dataset_augmented <- augment_original_data(dataset_from_rds,
                                                time_window_numeric())
@@ -57,11 +57,13 @@ shinyServer(function(input, output) {
     
   })
 
+  
   sanity <- reactive({
     sanitized_term <- sanitize_term(input$search_term)
     sanity <- sanity_check_term_query(sanitized_term)
     return(sanity)
   })
+  
   
   filtered_dataset_sans_ids <- reactive({
     if (sanity() & query_state()) {
@@ -70,25 +72,39 @@ shinyServer(function(input, output) {
     }
   })
 
-  query_ids <- eventReactive(input$submit_button, {
+  
+  query_pre_ids <- eventReactive(input$submit_button, {
     if (sanity()) {
       removeNotification(id = "query_null")
       withProgress(message = 'Querying API...', value = 0.5, {
-        selected_fields <- get_api_fields_from_input(input$search_fields)
+        selected_fields <- api3_get_fields_from_input(input$search_fields)
         min_freq <- input$api_min_hits
-        get_query_ids_from_api(input, rest_api_url, terms_conf, selected_fields, min_freq)
+        # this one has multiple estcids, as multiple ecco ids give same estc id
+        query_results <- api3_get_query_ids(input, rest_api_url, terms_conf, selected_fields, min_freq)
+        # summarized_query_results <- api3_sum_estcid_hits(query_results)
+        # dataframe with columns: id, freq (=ESTCID, number of api hits)
+        return(query_results)
       })
     }
   })
   
+  
   # !refractor not pretty
   query_state <- reactive({
-    if (is.null(query_ids()) & sanity()){
+    if (is.null(query_pre_ids()) & sanity()) {
       return(FALSE)
     } else {
       return(TRUE)
     }
   })
+  
+  query_ids <- reactive({
+    if (sanity() & query_state()) {
+      summarized_query_results <- api3_sum_estcid_hits(query_pre_ids())
+      return(summarized_query_results)
+    }
+  })
+  
       
   filtered_dataset <- reactive({
     if (sanity() & query_state()) {
@@ -152,8 +168,8 @@ shinyServer(function(input, output) {
 
   output$intro_text <- renderText({
     if (!sanity()) {
-      "Some informative and helpful text on how to use the app.
-      It will disappear with a valid search string."
+      HTML(paste0("<b>","CHANGELOG", "</b>", "</br>",
+                  "<b>","0.2.","</b>", " Converted to API v3"))
     }    
   })
 
@@ -162,7 +178,9 @@ shinyServer(function(input, output) {
     if (sanity() & query_state()) {
       withProgress(message = 'Creating summary...', value = 0.5, {
         selected_years <- paste(input$range_years[1], input$range_years[2], sep = " - ")
-        api_query_hits <- nrow(query_ids())
+        api_query_eccoid_hits <- nrow(query_pre_ids())
+        api_query_hits_total <- sum(query_ids()$freq)
+        api_query_unique_estc_ids_hit <- length(query_ids()$id)
         output_query_hits_in_data_original <- 
           get_query_summary_string(query_ids(), get_dataset_augmented())
         output_query_hits_in_data_subset <- 
@@ -174,7 +192,10 @@ shinyServer(function(input, output) {
                              "Language" = input$language,
                              "Time segment" = input$time_window,
                              "Document type" = input$document_type,
-                             "ECCO API query hits" = api_query_hits,
+                             "ECCO API query hits" = api_query_hits_total,
+                             "ECCO API ids hit" = api_query_eccoid_hits,
+                             "Unique ESTC IDs hit in query" =
+                               api_query_unique_estc_ids_hit,
                              "Unique hit IDs in ESTC or subcorpus" =
                                output_query_hits_in_data_original,
                              "Hits_final" =
@@ -358,6 +379,7 @@ shinyServer(function(input, output) {
   output$top_titlehits_plot <- renderPlot({
     if (sanity() & query_state()) {
       withProgress(message = 'Plotting top titles...', value = 0.5, {
+        # !!!THISNEXT VVVV
         total_titlehits <- get_total_titlehits(filtered_dataset()$place_filtered,
                                                query_ids(),
                                                nchar = nchar)

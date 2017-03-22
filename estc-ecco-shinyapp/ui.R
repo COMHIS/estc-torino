@@ -12,7 +12,7 @@ shinyUI(fluidPage(
   # tags$head(tags$link(rel = "icon", type = "image/png", href = "www/favicon48.png")),
   includeCSS("styles.css"),  
   # Application title
-  titlePanel("ECCO Explorer v0.1"),
+  titlePanel("ECCO Explorer v0.2"),
   
   # Sidebar with a slider input for number of bins
   sidebarLayout(
@@ -93,7 +93,8 @@ shinyUI(fluidPage(
                  h3("Search summary",
                     class = "text-center"),
                  tableOutput("summary_table"),
-                 textOutput("intro_text"),
+                 # textOutput("intro_text"),
+                 uiOutput(outputId = "intro_text"),
                  textInput(inputId = "ids_identifier", label = "", placeholder = "input idfile name"),
                  actionButton(inputId = "save_button", 
                               label = "Save subcorpus",
@@ -130,6 +131,7 @@ shinyUI(fluidPage(
                  h3("Top hits per title", class = "text-center"),
                  p("The title length is limited up to 40 first characters."),
                  plotOutput("top_titlehits_plot"),
+                 p("NOTE: edition here = identical title, and the following is therefore a very rough estimate only!"),
                  plotOutput("top_titlehits_edition_plot"),
                  plotOutput("top_titlehits_edition_by_edition_plot")
                  ),
